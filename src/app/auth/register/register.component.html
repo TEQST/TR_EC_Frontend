@@ -1,0 +1,34 @@
+<form [formGroup]="stepOneForm" (ngSubmit)="submit()"
+  (keyup.enter)="stepOneForm?.valid ? submit() : undefined">
+  <ion-item lines="full">
+    <ion-label position="floating">{{ 'Username' | translate }}</ion-label>
+    <ion-input formControlName="username" type="text" id="username"></ion-input>
+  </ion-item>
+  <div class="error" *ngIf="errorControl.username.errors?.required && errorControl.username.touched">
+    Username is required.
+  </div>
+  <div class="warning" *ngIf="stepOneForm.controls.username.pending">
+    Checking username...
+  </div>
+  <div class="error" *ngIf="!errorControl.username.valid && !errorControl.username.pending && !errorControl.username.errors?.required">
+    Username is already taken.
+  </div>
+  <ion-item id="password-item" lines="full">
+    <ion-label position="floating">{{ 'Password' | translate }}</ion-label>
+    <ion-button id="toggle-password" fill=clear slot="end" (click)="showPassword = !showPassword">
+      <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+    </ion-button>
+    <ion-input formControlName="password" [type]="showPassword ? 'text' : 'password'" id="password"></ion-input>
+  </ion-item>
+  <ion-item lines="full" >
+    <ion-checkbox #cbox formControlName="checkbox"></ion-checkbox>
+    <ion-label (click)="cbox.checked = !cbox.checked" class="cbox-label">I accept the <a [routerLink]="" (click)="presentServicesAgreement()">Services Agreement</a></ion-label>
+  </ion-item>
+  <ion-button class="button-submit" type="submit" [disabled]="!stepOneForm.valid" expand="block">{{'Register' | translate}}
+  </ion-button>
+</form>
+
+<ion-card-content>
+  <ng-container>{{'Already have an Account?' | translate}}</ng-container>
+  <p><a routerLink="/login" class="login-redirect">{{'Login here' | translate }}</a></p>
+</ion-card-content>

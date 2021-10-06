@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
+import {AuthPageModule} from './auth/auth.module';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+    loadChildren: (): Promise<AuthPageModule> => import('./auth/auth.module')
+        .then((m) => m.AuthPageModule),
   }
 ];
 @NgModule({
