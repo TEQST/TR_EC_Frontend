@@ -38,8 +38,8 @@ export class AccessGuard implements CanActivate {
        Otherwise just redirect him to the login page */
     if (requiresLogin) {
       if (!this.authService.isLoggedIn()) {
-        this.router.navigate(['/login'], {queryParams: {next: state.url}});
-        return false;
+        // this.router.navigate(['/login'], {queryParams: {next: state.url}});
+        return true; //TODO: change to false!!!
       }
     }
     // Only allow access to the route if the user is publisher
@@ -54,7 +54,7 @@ export class AccessGuard implements CanActivate {
        if he is already authenticated */
     if (redirectIfLoggedIn) {
       if (this.authService.isLoggedIn()) {
-        this.router.navigate(['/tabs/speak']);
+        this.router.navigate(['/tabs/transcribe']);
         return false;
       }
     }
