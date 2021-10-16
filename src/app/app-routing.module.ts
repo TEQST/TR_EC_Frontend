@@ -24,13 +24,18 @@ const routes: Routes = [
     component: PageNotFoundComponent,
     data: {requiresLogin: true},
     canActivate: [AccessGuard],
-  },  {
+  },
+  {
     path: 'transcribe',
     loadChildren: () => import('./transcribe/transcribe.module').then( m => m.TranscribePageModule)
   },
   {
     path: 'edit',
     loadChildren: () => import('./edit/edit.module').then( m => m.EditPageModule)
+  },
+  {
+    path: 'manage',
+    loadChildren: () => import('./manage/manage.module').then( m => m.ManagePageModule)
   }
 
 ];

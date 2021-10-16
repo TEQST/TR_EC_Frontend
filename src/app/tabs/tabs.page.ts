@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ViewChild, ViewChildren, ElementRef} from '@angular/core';
-import {IonTabs, IonTabButton} from '@ionic/angular';
+import {IonTabs, IonTabButton, AlertController} from '@ionic/angular';
+import { AuthenticationService } from '../services/authentication.service';
 
 import {UsermgmtService} from '../services/usermgmt.service';
 
@@ -17,7 +18,9 @@ export class TabsPage implements OnInit {
   public isPublisher: boolean;
   public isListener: boolean;
 
-  constructor(public usermgmtService: UsermgmtService) { }
+  constructor(public usermgmtService: UsermgmtService,
+              public authenticationService: AuthenticationService,
+              public alertController: AlertController) { }
 
   ngOnInit(): void {
     this.usermgmtService.getIsPublisher().subscribe((isPublisher: boolean) => {
@@ -43,5 +46,24 @@ export class TabsPage implements OnInit {
       tabbuttonEl.nativeElement
           .removeEventListener('touchend', tabbuttonEl.onTouch);
     });
+  }
+
+  async showLogoutConfirm() {
+    const alert = await this.alertController.create({
+      header: 'Do you want to logout?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel'
+        }, {
+          text: 'Yes',
+          handler: () => {
+            this.authenticationService.logout();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 }

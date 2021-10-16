@@ -45,7 +45,7 @@ export class AccessGuard implements CanActivate {
     // Only allow access to the route if the user is publisher
     if (requiredRole === 'publisher') {
       if (!this.userService.getIsPublisher()) {
-        this.router.navigate(['/tabs/speak']);
+        this.router.navigate(['/tabs/transcribe']);
         return false;
       }
     }

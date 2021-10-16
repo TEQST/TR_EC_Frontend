@@ -7,6 +7,7 @@ import {AccessGuard} from '../auth/access.guard';
 import {TabsPage} from './tabs.page';
 import {RouterModule, Routes} from '@angular/router';
 import {ManagePageModule} from '../manage/manage.module';
+import { TranscribePageModule } from '../transcribe/transcribe.module';
 
 const routes: Routes = [
   {
@@ -20,16 +21,14 @@ const routes: Routes = [
       },
       {
         path: 'transcribe',
-        loadChildren: ()
-        :Promise<TranscribePageModule> => import('../transcribe/transcribe.module')
+        loadChildren: (): Promise<TranscribePageModule> => import('../transcribe/transcribe.module')
             .then((m) => m.TranscribePageModule),
         data: {requiresLogin: true},
         canActivate: [AccessGuard],
       },
       {
         path: 'manage',
-        loadChildren: ()
-        :Promise<ManagePageModule> => import('../manage/manage.module')
+        loadChildren: (): Promise<ManagePageModule> => import('../manage/manage.module')
             .then((m) => m.ManagePageModule),
         data: {requiresLogin: true, requiredRole: 'publisher'},
         canActivate: [AccessGuard],
