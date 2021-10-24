@@ -45,7 +45,7 @@ export class AuthenticationService {
             const nextURL = this.route.snapshot.queryParamMap.get('next');
             this.navCtrl.navigateForward(nextURL);
           } else {
-            this.navCtrl.navigateForward('/tabs/speak');
+            this.navCtrl.navigateForward('/tabs/transcribe');
           }
         }, (error: any) => {
           // calls AlertService when server sends error code

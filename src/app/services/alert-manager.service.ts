@@ -21,7 +21,7 @@ export class AlertManagerService {
 
   async presentGoBackAlert(
       header: string,
-      redirectURL = '/tabs/speak'): Promise<void> {
+      redirectURL = '/tabs/transcribe'): Promise<void> {
 
     if (this.alertActive) {
       return;
