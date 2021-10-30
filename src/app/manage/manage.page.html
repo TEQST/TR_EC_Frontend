@@ -1,9 +1,63 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>manage</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button *ngIf="currentFolder.id" defaultHref="tabs/manage"></ion-back-button>
+    </ion-buttons>
+    <ion-img *ngIf="currentFolder.name == '/'" src="../../assets/img/logo.png"></ion-img>
+    <ion-buttons *ngIf="currentFolder.is_sharedfolder" slot="end">
+      <ion-button color="primary" (click)="openShareFolderModal()">
+        <ion-icon name="cloudy"></ion-icon>
+      </ion-button>
+      <ion-button color="primary" (click)="downloadFolder()">
+        <ion-icon name="download"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-progress-bar *ngIf="isLoading" type="indeterminate"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-
+<ion-content class="no-select">
+  <h1>
+    <span *ngIf="currentFolder.name == '/'">
+      Folders of {{username}}
+    </span>
+    <span *ngIf="currentFolder.name != '/'">{{currentFolder.name}}</span>
+  </h1>
+  <div #folderList class="fadeInWhenLoaded">
+    <ion-list *ngIf="subfolders.length > 0">
+      <ion-item button *ngFor="let folder of subfolders" [routerLink]="['/tabs/manage', folder.id]"
+        [state]="{folder: folder}">
+        <ion-icon name="folder" class="folderIcon" color="primary"></ion-icon> {{ folder.name }}
+        <ion-button class="delete" color="danger" slot="end" (click)="openDeleteFolderAlert($event, folder)">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+  </div>
+  <div #transcriptionList class="fadeInWhenLoaded">
+    <ion-list *ngIf="transcriptions.length > 0" class="fix-padding">
+      <!-- <ion-item button *ngFor="let transcription of transcriptions" [routerLink]="['/tabs/manage/transcription', transcription.id]" [state]="{title: -->
+      <ion-item button *ngFor="let transcription of transcriptions" [routerLink]="['/tabs/manage/transcription', transcription.id]" [state]="{title:
+        transcription.title}">
+        <ion-icon name="reader" color="dark" class="transcriptionIcon"></ion-icon>{{ transcription.title }}
+        <ion-button class="delete" color="danger" slot="end" (click)="openDeleteTranscriptionAlert($event, transcription)">
+          <ion-icon name="trash"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+  </div>
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+    <ion-fab-button color="primary">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button *ngIf="!currentFolder.is_sharedfolder" (click)="openCreateFolderModal()">
+        <ion-icon name="folder" color="primary"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button *ngIf="currentFolder.id != null && (currentFolder.is_sharedfolder || subfolders.length == 0)"
+        (click)="openCreateTranscriptionModal()">
+        <ion-icon name="reader" color="dark"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
 </ion-content>

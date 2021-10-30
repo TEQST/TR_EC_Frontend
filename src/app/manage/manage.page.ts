@@ -19,11 +19,11 @@ export class ManagePage implements OnInit {
   @ViewChild('folderList', { read: ElementRef }) folderListElem: ElementRef
   // There's another one here, but it looks like it's not used
 
-  public currentFolder: Folder
-  public subfolders: Folder[]
-  public transcriptions: Transcription[]
+  public currentFolder: Folder;
+  public subfolders: Folder[];
+  public transcriptions: Transcription[];
   public isLoading = false;
-  public username: string
+  public username: string;
 
   constructor(
     private manageFolderService: ManageFolderService,
@@ -95,6 +95,43 @@ export class ManagePage implements OnInit {
       this.alertManager.showErrorAlert(
         err.status, err.statusText, '/manage'
       );
+    });
+  }
+
+  openCreateFolderModal() {
+    this.manageFolderUIService.openCreateFolderModal(this.currentFolder, this.subfolders, () => this.getFolderInfo());
+  }
+
+  openDeleteFolderAlert($event, folder) {
+    // cancel click event to prevent opening the folder
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    this.manageFolderUIService.openDeleteFolderAlert(folder, () => this.getFolderInfo());
+  }
+
+  openShareFolderModal() {
+    this.manageFolderUIService.openShareFolderModal(this.currentFolder);
+  }
+
+  // leave out stats
+
+  downloadFolder() {
+    this.manageFolderService.downloadFolder(this.currentFolder);
+  }
+
+  openCreateTranscriptionModal() {
+    // TODO
+    // see TEQST for possible adequate arguments
+    this.manageTranscriptionUIService.openCreateTranscriptionModal();
+  }
+
+  openDeleteTranscriptionAlert($event, transcription) {
+    // cancel click event to prevent opening the text
+    $event.preventDefault();
+    $event.stopPropagation();
+    this.manageTranscriptionUIService.openDeleteTranscriptionAlert(transcription, (transcriptions) => {
+      this.transcriptions = transcriptions;
     });
   }
 

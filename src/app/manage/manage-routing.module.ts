@@ -7,7 +7,16 @@ const routes: Routes = [
   {
     path: '',
     component: ManagePage
-  }
+  },
+  {
+    path: ':folderId',
+    component: ManagePage
+  },
+  // {
+  //   path: 'transcription/:transcriptionId',
+  //   loadChildren: () => import('./transcription-detail/transcription-detail.module').then( m => m.TranscriptionDetailPageModule)
+  // }
+
 ];
 
 @NgModule({

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Constants } from '../constants';
+import { Folder } from '../manage/manage.folder';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,8 @@ export class ManageFolderService {
   }
 
   getTranscriptionListFor(folderId: string): Observable<object> {
-    // TODO
+    const url = this.SERVER_URL + `/api/pub/transcripts/?sharedfolder=${folderId}`;
+    return this.http.get(url);
   }
 
   createFolder(parentId: string, folderName: string) {
@@ -57,5 +59,7 @@ export class ManageFolderService {
 
   // getAllUsers
 
-  // downloadFolder
+  downloadFolder(folder: Folder) {
+    // TODO
+  }
 }

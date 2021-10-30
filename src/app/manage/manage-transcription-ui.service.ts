@@ -39,4 +39,32 @@ export class ManageTranscriptionUiService {
       );
     });
   }
+
+  async openCreateTranscriptionModal() {
+    // TODO
+    // see TEQST for possible adequate parameters
+  }
+
+  async openDeleteTranscriptionAlert(transcription, successCallback) {
+    const alert = await this.alertController.create({
+      header: 'Attention!',
+      message: `Do you really want to delete Transcription "${transcription.title}"?`,
+      buttons: [
+        'No',
+        {
+          text: 'Yes',
+          handler: async () => {
+            transcription.delete()
+                .subscribe(
+                    successCallback,
+                    (err) => this.alertManager.showErrorAlertNoRedirection(
+                        err.status,
+                        err.statusText),
+                );
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
 }
