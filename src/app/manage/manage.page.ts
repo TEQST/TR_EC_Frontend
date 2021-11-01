@@ -121,18 +121,31 @@ export class ManagePage implements OnInit {
   }
 
   openCreateTranscriptionModal() {
-    // TODO
-    // see TEQST for possible adequate arguments
-    this.manageTranscriptionUIService.openCreateTranscriptionModal();
+    this.manageTranscriptionUIService.openCreateTranscriptionModal(
+      this.currentFolder, this.transcriptions, () => {
+        if (!this.currentFolder.is_sharedfolder) {
+          this.currentFolder.is_sharedfolder = true;
+          this.transcriptionListElem.nativeElement.classList.add('loaded');
+        }
+        this.initTranscriptions();
+      });
   }
 
   openDeleteTranscriptionAlert($event, transcription) {
     // cancel click event to prevent opening the text
     $event.preventDefault();
     $event.stopPropagation();
-    this.manageTranscriptionUIService.openDeleteTranscriptionAlert(transcription, (transcriptions) => {
-      this.transcriptions = transcriptions;
+    this.manageTranscriptionUIService.openDeleteTranscriptionAlert(transcription, () => {
+      this.initTranscriptions();
     });
+  }
+
+  initTranscriptions() {
+    this.manageTranscriptionUIService.initTranscriptionList(
+      this.currentFolder, (transcriptions) => {
+        this.transcriptions = transcriptions;
+      }
+    );
   }
 
 }

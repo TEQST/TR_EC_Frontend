@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AlertController, ModalController } from '@ionic/angular';
 import { AlertManagerService } from '../services/alert-manager.service';
 import { ManageFolderService } from '../services/manage-folder.service';
+import { CreateTranscriptionPage } from './create-transcription/create-transcription.page';
 import { Transcription } from './manage.transcription';
 
 @Injectable({
@@ -40,9 +41,26 @@ export class ManageTranscriptionUiService {
     });
   }
 
-  async openCreateTranscriptionModal() {
-    // TODO
-    // see TEQST for possible adequate parameters
+  async openCreateTranscriptionModal(currentFolder, transcriptions, successCallback) {
+    const modal = await this.modelController.create({
+      component: CreateTranscriptionPage,
+      componentProps: {
+        existingTranscriptionNames: transcriptions.map((transcription) => transcription.title)
+      }
+    });
+    modal.onDidDismiss().then(async (returnData) => {
+      const params = returnData.data;
+      if (params) {
+        params['shared_folder'] = currentFolder.id;
+        this.manageFolderService.createTranscription(params).subscribe(
+          successCallback,
+          (err) => this.alertManager.showErrorAlertNoRedirection(
+            err.status, err.statusText
+          )
+        );
+      }
+    });
+    await modal.present();
   }
 
   async openDeleteTranscriptionAlert(transcription, successCallback) {

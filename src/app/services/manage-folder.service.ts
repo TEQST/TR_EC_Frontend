@@ -45,7 +45,22 @@ export class ManageFolderService {
     return this.http.delete(url);
   }
 
-  // createTranscription
+  createTranscription(params: any[]) {
+    const formData = new FormData();
+    for (const param in params) {
+      if ({}.hasOwnProperty.call(params, param)) {
+        const paramValue = params[param];
+        if (param === 'srcfile' || param === 'trfile') {
+          formData.append(param, paramValue, paramValue.name);
+        } else {
+          formData.append(param, paramValue);
+        }
+      }
+    }
+    const url = this.SERVER_URL + `/api/pub/transcripts/`;
+
+    return this.http.post(url, formData);
+  }
 
   deleteTranscription(transcriptionId: string) {
     // TODO

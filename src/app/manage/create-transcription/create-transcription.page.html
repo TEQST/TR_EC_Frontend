@@ -1,9 +1,35 @@
-<ion-header>
+<ion-header class="no-select">
   <ion-toolbar>
-    <ion-title>create-transcription</ion-title>
+    <ion-title>Create a new transcription</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
-<ion-content>
-
+<ion-content class="no-select">
+  <form [formGroup]="createTranscriptionForm" (ngSubmit)="createTranscription(createTranscriptionForm.value)">
+    <ion-list lines="full" class="ion-no-margin ion-no-padding">
+      <ion-item>
+        <ion-label position="stacked">Title</ion-label>
+        <ion-input #titleInput formControlName="title" name="name"></ion-input>
+      </ion-item>
+      <ion-item #selectFileWrapper [ngClass]="srcFileSelected ? 'ion-valid' : 'ion-invalid'">
+        <ion-label position="stacked">Transcription Audio Source</ion-label>
+        <ion-input (change)="setSrcFile($event.target.files.item(0))" ng-required="required" type="file" accept=".mp3,.mp4,.wav">
+        </ion-input>
+      </ion-item>
+      <ion-item #selectFileWrapper [ngClass]="trFileSelected ? 'ion-valid' : 'ion-invalid'">
+        <ion-label position="stacked">Transcription Text File</ion-label>
+        <ion-input (change)="setTrFile($event.target.files.item(0))" ng-required="required" type="file" accept=".json">
+        </ion-input>
+      </ion-item>
+    </ion-list>
+    <div class="ion-padding">
+      <ion-button [disabled]="!formValid" expand="block" type="submit" class="ion-no-margin" color="dark">
+        Create transcription
+      </ion-button>
+    </div>
+  </form>
 </ion-content>
