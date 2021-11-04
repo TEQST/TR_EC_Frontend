@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Constants } from '../constants';
+import { User } from '../interfaces/user';
 import { Folder } from '../manage/manage.folder';
 
 @Injectable({
@@ -63,16 +64,30 @@ export class ManageFolderService {
   }
 
   deleteTranscription(transcriptionId: string) {
-    // TODO
+    const url = this.SERVER_URL + `/api/pub/transcripts/${transcriptionId}/`;
+    return this.http.delete(url);
   }
 
   // getTranscriptionInfo
 
-  // getSpeakers
+  getEditors(sharedfolderId: number) {
+    const url =
+    this.SERVER_URL + `/api/sharedfolders/${sharedfolderId}/`;
+    return this.http.get<JSON[]>(url);
+  }
 
-  // setSpeakers
+  setEditors(
+    sharedfolderId: number,
+    speakers: number[]) {
 
-  // getAllUsers
+  const url = this.SERVER_URL + `/api/sharedfolders/${sharedfolderId}/`;
+  return this.http.put<JSON>(url, {editor_ids: speakers});
+}
+
+getAllUsers() {
+  const url = this.SERVER_URL + `/api/users/`;
+  return this.http.get<User[]>(url);
+}
 
   downloadFolder(folder: Folder) {
     // TODO

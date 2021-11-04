@@ -1,9 +1,52 @@
-<ion-header>
+<ion-header class="no-select">
   <ion-toolbar>
-    <ion-title>share-folder</ion-title>
+    <ion-title>Select Editors for {{folderName}}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar (ionChange)="onSearchTerm($event)" animated placeholder="Search for User">
+    </ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-
+<ion-content class="no-select">
+  <div>
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Added Editors</ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let editor of filteredEditors">
+        <ion-label>{{editor.username}}</ion-label>
+        <ion-button color="danger" slot="end" (click)="removeEditor(editor)">
+          <ion-icon name="remove"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+    <ion-list>
+      <ion-list-header>
+        <ion-label>All Users</ion-label>
+      </ion-list-header>
+      <ion-item *ngFor="let user of filteredUsers">
+        <ion-label>{{user.username}}</ion-label>
+        <ion-button color="success" slot="end" (click)="addEditor(user)">
+          <ion-icon name="add"></ion-icon>
+        </ion-button>
+      </ion-item>
+    </ion-list>
+  </div>
+  <!-- Skeleton Text displayed during Loading -->
+  <!-- <div>
+    <ion-list *ngFor="let i of [1, 2]">
+      <ion-item *ngFor="let i of [1, 2, 3]">
+        <ion-label>
+          <ion-skeleton-text animated style="width: 30%"></ion-skeleton-text>
+        </ion-label>
+        <ion-skeleton-text class="ion-float-right" animated style="width: 30%"></ion-skeleton-text>
+      </ion-item>
+    </ion-list>
+  </div> -->
 </ion-content>
