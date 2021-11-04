@@ -1,5 +1,6 @@
 # TR_EC_Frontend
 ### This repository contains the frontend code of TR_EC
+### The Backend API is documented [here](https://app.swaggerhub.com/apis/teqst.team/TR_EC-API/2.0.0#/)
 ## Setup
 ### Install the Ionic Framework and Angular
 npm install -g @ionic/cli\
