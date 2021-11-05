@@ -33,7 +33,7 @@ export class TranscribeTabNavService {
 
   loadContentsOfSharedFolder(folderId: string) {
     this.requestMade.next(true);
-    const url = this.SERVER_URL + `/api/spk/sharedfolders/${folderId}/`;
+    const url = this.SERVER_URL + `/api/edt/sharedfolders/${folderId}/`;
 
     return this.http.get<SharedFolder>(url).subscribe(
         (data) => {
@@ -44,7 +44,7 @@ export class TranscribeTabNavService {
     );
   }
   getInfoForSharedfolder(folderId: string) {
-    const url = this.SERVER_URL + `/api/spk/sharedfolders/${folderId}/`;
-
+    const url = this.SERVER_URL + `/api/edt/sharedfolders/${folderId}/`;
+    return this.http.get(url);
   }
 }

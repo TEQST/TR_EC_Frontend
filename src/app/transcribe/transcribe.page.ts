@@ -30,7 +30,6 @@ export class TranscribePage extends BaseComponent implements OnInit {
     this.navService.getPublisherList()
         .subscribe(
             (data) => {
-              console.log(data)
               this.publishers = data;
               this.publisherListElem.nativeElement.classList.add('loaded');
             },

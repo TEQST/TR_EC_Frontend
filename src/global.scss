@@ -59,6 +59,10 @@ ion-item {
     --inner-padding-bottom: 6px;
     --padding-start: 0;
     --inner-padding-start: 20px;
+
+    > ion-icon:first-child {
+        margin-right: 10px;
+    }
 }
 
 ion-content h1 {

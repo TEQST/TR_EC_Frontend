@@ -8,8 +8,8 @@
 <ion-content class="no-select">
   <h1>Select a publisher</h1>
   <div #publisherList class="fadeInWhenLoaded">
-    <ion-list *ngIf="this.publishers != null">
-      <ion-item button *ngFor="let pub of publishers" routerLink="/tabs/speak/{{pub.id}}"
+    <ion-list *ngIf="this.publishers !== null">
+      <ion-item button *ngFor="let pub of publishers" routerLink="/tabs/transcribe/{{pub.id}}"
         [state]="{publisherName: pub.username}">
         <ion-icon name="person" class="person"></ion-icon> {{ pub.username }}
       </ion-item>

@@ -3,6 +3,7 @@ import {PreloadAllModules, RouterModule, Routes} from '@angular/router';
 
 import {AccessGuard} from './auth/access.guard';
 import {AuthPageModule} from './auth/auth.module';
+import { EditPageModule } from './edit/edit.module';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 import {TabsPageModule} from './tabs/tabs.module';
 
@@ -11,6 +12,13 @@ const routes: Routes = [
     path: 'tabs',
     loadChildren: (): Promise<TabsPageModule> => import('./tabs/tabs.module')
         .then((m) => m.TabsPageModule),
+  },
+  {
+    path: 'transcribe/:publisherId/:folderId/:textId',
+    loadChildren: ()
+    :Promise<EditPageModule> =>
+      import('./edit/edit.module')
+          .then( (m) => m.EditPageModule),
   },
   {
     path: '',
@@ -36,8 +44,7 @@ const routes: Routes = [
   {
     path: 'manage',
     loadChildren: () => import('./manage/manage.module').then( m => m.ManagePageModule)
-  }
-
+  },
 ];
 
 @NgModule({
