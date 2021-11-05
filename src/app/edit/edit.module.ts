@@ -7,6 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { EditPageRoutingModule } from './edit-routing.module';
 
 import { EditPage } from './edit.page';
+import { PlayerComponent } from './player/player.component';
+import { EditorComponent } from './editor/editor.component';
 
 @NgModule({
   imports: [
@@ -15,6 +17,10 @@ import { EditPage } from './edit.page';
     IonicModule,
     EditPageRoutingModule
   ],
-  declarations: [EditPage]
+  declarations: [
+    EditPage,
+    PlayerComponent,
+    EditorComponent
+  ]
 })
 export class EditPageModule {}
