@@ -13,13 +13,16 @@ export class CreateTranscriptionPage implements OnInit {
   public titleValid: boolean;
   public srcFileSelected: boolean;
   public trFileSelected: boolean;
+  public zipFileSelected: boolean;
   public createTranscriptionForm: FormGroup;
+  public singleUpload = true;
 
   /* allow any characters except \,/,:,*,<,>,| and whitespaces
      but not filenames starting with the character . */
   private validatorPattern = new RegExp('^(?!\\.)[^\\\\\/:\\*"<>\\| ]+$');
   private srcFile: File;
   private trFile: File;
+  private zipFile: File;
   private existingTranscriptionNames: string[];
 
   constructor(
@@ -42,12 +45,33 @@ export class CreateTranscriptionPage implements OnInit {
     this.viewCtrl.dismiss();
   }
 
-  createTranscription(formData) {
+  switchToMulti() {
+    if (this.singleUpload) {
+      this.singleUpload = false;
+    }
+  }
+
+  switchToSingle() {
+    if (!this.singleUpload) {
+      this.singleUpload = true;
+    }
+  }
+
+  createTranscriptionSingle(formData) {
     // close the modal and pass its data back to the view
     const returnData = {
+      single: true,
       title: formData.title,
       srcfile: this.srcFile,
       trfile: this.trFile};
+    this.viewCtrl.dismiss(returnData);
+  }
+
+  createTranscriptionMulti() {
+    const returnData = {
+      single: false,
+      zfile: this.zipFile
+    };
     this.viewCtrl.dismiss(returnData);
   }
 
@@ -61,6 +85,11 @@ export class CreateTranscriptionPage implements OnInit {
     this.trFile = file;
     this.trFileSelected = true;
     this.updateFormValidity();
+  }
+
+  setZipFile(file) {
+    this.zipFile = file;
+    this.zipFileSelected = true;
   }
 
   transcriptionTitleValidator(control: FormControl) {

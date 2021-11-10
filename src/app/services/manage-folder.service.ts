@@ -46,7 +46,7 @@ export class ManageFolderService {
     return this.http.delete(url);
   }
 
-  createTranscription(params: any[]) {
+  createTranscriptionSingle(params: any[]) {
     const formData = new FormData();
     for (const param in params) {
       if ({}.hasOwnProperty.call(params, param)) {
@@ -59,6 +59,23 @@ export class ManageFolderService {
       }
     }
     const url = this.SERVER_URL + `/api/pub/transcripts/`;
+
+    return this.http.post(url, formData);
+  }
+
+  createTranscriptionMulti(params: any[]) {
+    const formData = new FormData();
+    for (const param in params) {
+      if ({}.hasOwnProperty.call(params, param)) {
+        const paramValue = params[param];
+        if (param === 'zfile') {
+          formData.append(param, paramValue, paramValue.name);
+        } else {
+          formData.append(param, paramValue);
+        }
+      }
+    }
+    const url = this.SERVER_URL + `/api/pub/transcripts/multiupload/`;
 
     return this.http.post(url, formData);
   }
