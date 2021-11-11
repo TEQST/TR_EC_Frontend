@@ -1,9 +1,22 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>transcription-detail</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <ion-list>
+    <ion-item *ngFor="let paragraph of paragraphs">
+      <ion-text>{{paragraph}}</ion-text>
+    </ion-item>
+  </ion-list>
 </ion-content>
+
+<ion-footer>
+  <ion-buttons class="ion-justify-content-center">
+    <ion-button [disabled]="isLoaded" (click)="stop()"><ion-icon name="square"></ion-icon></ion-button>
+    <ion-button [disabled]="isLoaded" (click)="toggle()"><ion-icon [name]="isPlaying ? 'pause':'play'"></ion-icon></ion-button>
+  </ion-buttons>
+</ion-footer>

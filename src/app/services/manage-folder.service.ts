@@ -6,15 +6,12 @@ import { User } from '../interfaces/user';
 import { Folder } from '../manage/manage.folder';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ManageFolderService {
-
   SERVER_URL = Constants.SERVER_URL;
 
-  constructor(
-    private http: HttpClient,
-  ) { }
+  constructor(private http: HttpClient) {}
 
   // getFolderInfoFor
 
@@ -27,18 +24,18 @@ export class ManageFolderService {
   }
 
   getTranscriptionListFor(folderId: string): Observable<object> {
-    const url = this.SERVER_URL + `/api/pub/transcripts/?sharedfolder=${folderId}`;
+    const url =
+      this.SERVER_URL + `/api/pub/transcripts/?sharedfolder=${folderId}`;
     return this.http.get(url);
   }
 
   createFolder(parentId: string, folderName: string) {
     const url = this.SERVER_URL + `/api/folders/`;
 
-    return this.http.post(url,
-      {
-        parent: parentId,
-        name: folderName,
-      });
+    return this.http.post(url, {
+      parent: parentId,
+      name: folderName,
+    });
   }
 
   deleteFolder(folderId: string) {
@@ -85,26 +82,34 @@ export class ManageFolderService {
     return this.http.delete(url);
   }
 
-  // getTranscriptionInfo
+  async getTranscriptionAudio(transcriptionId: string) {
+    const url = this.SERVER_URL + `/api/transcripts/${transcriptionId}/download/`;
+    // set blob as response type
+    const audioHttpOptions = {
+      responseType: 'blob' as 'json',
+    };
+    return await this.http.get<Blob>(url, audioHttpOptions).toPromise();
+  }
+
+  getTranscriptionDetail(transcriptionId: string) {
+    const url = this.SERVER_URL + `/api/pub/transcripts/${transcriptionId}/`;
+    return this.http.get(url);
+  }
 
   getEditors(sharedfolderId: number) {
-    const url =
-    this.SERVER_URL + `/api/sharedfolders/${sharedfolderId}/`;
+    const url = this.SERVER_URL + `/api/sharedfolders/${sharedfolderId}/`;
     return this.http.get<JSON[]>(url);
   }
 
-  setEditors(
-    sharedfolderId: number,
-    speakers: number[]) {
+  setEditors(sharedfolderId: number, speakers: number[]) {
+    const url = this.SERVER_URL + `/api/sharedfolders/${sharedfolderId}/`;
+    return this.http.put<JSON>(url, { editor_ids: speakers });
+  }
 
-  const url = this.SERVER_URL + `/api/sharedfolders/${sharedfolderId}/`;
-  return this.http.put<JSON>(url, {editor_ids: speakers});
-}
-
-getAllUsers() {
-  const url = this.SERVER_URL + `/api/users/`;
-  return this.http.get<User[]>(url);
-}
+  getAllUsers() {
+    const url = this.SERVER_URL + `/api/users/`;
+    return this.http.get<User[]>(url);
+  }
 
   downloadFolder(folder: Folder) {
     // TODO
