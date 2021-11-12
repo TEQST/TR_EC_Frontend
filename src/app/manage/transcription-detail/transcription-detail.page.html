@@ -16,7 +16,7 @@
 
 <ion-footer>
   <ion-buttons class="ion-justify-content-center">
-    <ion-button [disabled]="isLoaded" (click)="stop()"><ion-icon name="square"></ion-icon></ion-button>
-    <ion-button [disabled]="isLoaded" (click)="toggle()"><ion-icon [name]="isPlaying ? 'pause':'play'"></ion-icon></ion-button>
+    <ion-button [disabled]="!isLoaded" (click)="stop()"><ion-icon name="square"></ion-icon></ion-button>
+    <ion-button [disabled]="!isLoaded" (click)="toggle()"><ion-icon [name]="isPlaying ? 'pause':'play'"></ion-icon></ion-button>
   </ion-buttons>
 </ion-footer>
