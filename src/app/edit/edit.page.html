@@ -9,9 +9,20 @@
 
 <ion-content>
   <div id="media-player">
-    <app-player></app-player>
+
   </div>
   <div id="editor">
-    <app-editor></app-editor>
+    <ion-list>
+      <ion-item *ngFor="let paragraph of paragraphs">
+        <ion-text>{{paragraph[0].word}}</ion-text>
+      </ion-item>
+    </ion-list>
   </div>
 </ion-content>
+
+<ion-footer>
+  <ion-buttons class="ion-justify-content-center">
+    <ion-button [disabled]="isLoaded" (click)="mediaStop()"><ion-icon name="square"></ion-icon></ion-button>
+    <ion-button [disabled]="isLoaded" (click)="mediaToggle()"><ion-icon [name]="isPlaying ? 'pause':'play'"></ion-icon></ion-button>
+  </ion-buttons>
+</ion-footer>

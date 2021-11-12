@@ -37,6 +37,7 @@ export class TextListPage extends BaseComponent implements OnInit {
       this.sharedFolderData = data;
       this.folderName = data.name;
       this.texts = data.transcripts;
+      console.log(this.texts)
       this.textListElem.nativeElement.classList.add('loaded');
     });
     // clear contents when data is being refreshed

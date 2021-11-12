@@ -10,7 +10,7 @@
 <ion-content class="no-select">
   <h1>Texts in {{folderName}}</h1>
   <ion-list #textList class="fadeInWhenLoaded">
-    <ion-item button *ngFor="let text of texts" routerLink="/transcribe/{{publisherId}}/{{folderId}}/{{text.id}}">
+    <ion-item button *ngFor="let text of texts" routerLink="/transcribe/{{publisherId}}/{{folderId}}/{{text.id}}" [state]="{correctionId: text.correction}">
       <ion-icon name="reader" [color]="(text.words_finished/text.words_total) === 1 ? 'success' : 'dark'" class="textIcon"></ion-icon> 
       <ion-label>{{ text.title }}</ion-label>
     </ion-item>

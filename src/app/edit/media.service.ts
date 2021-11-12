@@ -1,0 +1,52 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { ManageFolderService } from '../services/manage-folder.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class MediaService {
+
+  public isPlaying = new BehaviorSubject<boolean>(false);
+  public isLoaded  = new BehaviorSubject<boolean>(false);
+
+  private audio;
+
+  constructor(
+    private manageFolderService: ManageFolderService,
+  ) { }
+
+  ngOnInit() { }
+
+  async loadAudio(transcriptionId: string) {
+    this.audio = new Audio();
+    this.audio.addEventListener('canplaythrough', () => this.setupAudioButtons);
+    const blob = await this.manageFolderService.getTranscriptionAudio(transcriptionId);
+    console.log(blob.type);
+    this.audio.src = URL.createObjectURL(blob);
+    this.audio.load();
+  }
+
+  setupAudioButtons() {
+    this.isLoaded.next(true);
+  }
+
+  toggle() {
+    if (this.isPlaying) {
+      this.audio.pause();
+    } else {
+      this.audio.play();
+    }
+    this.isPlaying.next(!this.isPlaying.getValue());
+  }
+
+  stop() {
+    this.audio.pause();
+    this.audio.currentTime = 0;
+    this.isPlaying.next(false);
+  }
+
+  cleanup() {
+    URL.revokeObjectURL(this.audio.src);  // to avoid memory leak
+  }
+}
