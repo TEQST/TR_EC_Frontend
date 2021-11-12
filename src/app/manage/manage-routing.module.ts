@@ -12,10 +12,10 @@ const routes: Routes = [
     path: ':folderId',
     component: ManagePage
   },
-  // {
-  //   path: 'transcription/:transcriptionId',
-  //   loadChildren: () => import('./transcription-detail/transcription-detail.module').then( m => m.TranscriptionDetailPageModule)
-  // }
+  {
+    path: 'transcription/:transcriptionId',
+    loadChildren: () => import('./transcription-detail/transcription-detail.module').then( m => m.TranscriptionDetailPageModule)
+  }
 
 ];
 

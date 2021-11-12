@@ -52,12 +52,23 @@ export class ManageTranscriptionUiService {
       const params = returnData.data;
       if (params) {
         params['shared_folder'] = currentFolder.id;
-        this.manageFolderService.createTranscription(params).subscribe(
-          successCallback,
-          (err) => this.alertManager.showErrorAlertNoRedirection(
-            err.status, err.statusText
-          )
-        );
+        if (params['single']) {
+          delete params['single']
+          this.manageFolderService.createTranscriptionSingle(params).subscribe(
+            successCallback,
+            (err) => this.alertManager.showErrorAlertNoRedirection(
+              err.status, err.statusText
+            )
+          );
+        } else {
+          delete params['single']
+          this.manageFolderService.createTranscriptionMulti(params).subscribe(
+            successCallback,
+            (err) => this.alertManager.showErrorAlertNoRedirection(
+              err.status, err.statusText
+            )
+          );
+        }
       }
     });
     await modal.present();

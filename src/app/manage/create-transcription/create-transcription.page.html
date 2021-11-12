@@ -8,8 +8,22 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+
+
+
 <ion-content class="no-select">
-  <form [formGroup]="createTranscriptionForm" (ngSubmit)="createTranscription(createTranscriptionForm.value)">
+  <ion-grid class="ion-no-padding">
+    <ion-row>
+      <ion-col>
+        <ion-button class="no-margin" expand="full" [fill]="singleUpload ? 'solid' : 'outline'" (click)="switchToSingle()">Single</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button class="no-margin" expand="full" [fill]="singleUpload ? 'outline' : 'solid'" (click)="switchToMulti()">Multiple</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <form *ngIf="singleUpload" [formGroup]="createTranscriptionForm" (ngSubmit)="createTranscriptionSingle(createTranscriptionForm.value)">
     <ion-list lines="full" class="ion-no-margin ion-no-padding">
       <ion-item>
         <ion-label position="stacked">Title</ion-label>
@@ -29,6 +43,20 @@
     <div class="ion-padding">
       <ion-button [disabled]="!formValid" expand="block" type="submit" class="ion-no-margin" color="dark">
         Create transcription
+      </ion-button>
+    </div>
+  </form>
+  <form *ngIf="!singleUpload" (ngSubmit)="createTranscriptionMulti()">
+    <ion-list lines="full" class="ion-no-margin ion-no-padding">
+      <ion-item #selectFileWrapper [ngClass]="zipFileSelected ? 'ion-valid' : 'ion-invalid'">
+        <ion-label position="stacked">Zip File</ion-label>
+        <ion-input (change)="setZipFile($event.target.files.item(0))" ng-required="required" type="file" accept=".zip">
+        </ion-input>
+      </ion-item>
+    </ion-list>
+    <div class="ion-padding">
+      <ion-button [disabled]="!zipFileSelected" expand="block" type="submit" class="ion-no-margin" color="dark">
+        Create Transcriptions
       </ion-button>
     </div>
   </form>
