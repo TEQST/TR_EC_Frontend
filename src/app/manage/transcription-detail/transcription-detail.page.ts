@@ -48,7 +48,8 @@ export class TranscriptionDetailPage implements OnInit {
 
   async loadAudio() {
     this.audio = new Audio();
-    this.audio.addEventListener('canplaythrough', this.setupAudioButtons);
+    this.audio.addEventListener('canplaythrough', () => { this.setupAudioButtons(); });
+    this.audio.addEventListener('progress', () => { console.log('made progress'); });
     const audioBlob = await this.manageFolderService.getTranscriptionAudio(this.transcriptionId);
     this.audio.src = URL.createObjectURL(audioBlob);
     this.audio.load();
@@ -69,6 +70,7 @@ export class TranscriptionDetailPage implements OnInit {
   }
 
   setupAudioButtons() {
+    console.log('loaded');
     this.isLoaded = true;
   }
 
