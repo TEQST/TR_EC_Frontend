@@ -41,6 +41,8 @@ export class EditPage implements OnInit {
 
 ngOnInit() {
     this.textId = this.route.snapshot.paramMap.get('textId');
+    this.isLoaded = false;
+    this.isPlaying = false;
 
     const routeParams = this.router.getCurrentNavigation().extras.state;
     if (typeof routeParams !== 'undefined' && 'correctionId' in routeParams) {

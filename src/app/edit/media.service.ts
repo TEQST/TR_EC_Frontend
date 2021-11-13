@@ -32,7 +32,7 @@ export class MediaService {
   }
 
   toggle() {
-    if (this.isPlaying) {
+    if (this.isPlaying.getValue()) {
       this.audio.pause();
     } else {
       this.audio.play();
