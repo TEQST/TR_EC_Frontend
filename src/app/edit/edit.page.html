@@ -7,21 +7,22 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="ion-padding">
   <div id="media-player">
 
   </div>
   <div id="editor">
     <ion-list id="paragraphs" spellcheck="false">
       <ion-item *ngFor="let paragraph of paragraphs; index as i">
-        <ion-label>{{paragraph[0].start}}</ion-label>
-        <div contenteditable (focusout)="updateTimestamps($event)" [attr.data-index]="i">
+        <ion-label>{{paragraph[0].start}} - {{paragraph[paragraph.length-1].end}}</ion-label>
+        <div contenteditable (focusout)="updateTimestamps($event, i)" (keydown)="splitParagraphIfEnter($event, i)">
           <ng-container *ngFor="let word of paragraph; index as j">
             <span>{{word.word}}</span>
             <span *ngIf="j < paragraph.length - 1">&nbsp;</span>
           </ng-container>
         </div>
-        <ion-button slot="start" size="small" class="link-btn" *ngIf="i < paragraphs.length - 1">
+        <div *ngIf="i == 0" slot="start" id="merge-placeholder"></div>
+        <ion-button *ngIf="i > 0" (click)="mergeParagraphUp(i)" slot="start" size="small" class="link-btn">
           <ion-icon name="arrow-up"></ion-icon>
         </ion-button>
       </ion-item>

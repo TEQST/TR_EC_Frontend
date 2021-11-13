@@ -47,11 +47,6 @@ ngOnInit() {
       this.correctionId = routeParams.correctionId;
       this.loadCorrection();
     }else {
-      //this.correctionId="3"
-      //this.loadCorrection();
-      // TODO: load correction id from backend
-      // ... callback: loadCorrection()
-
       const url = Constants.SERVER_URL + `/api/edt/transcripts/${this.textId}/`;
       this.http.get(url).subscribe((data: any) => {
         if (Number.isInteger(data.correction)) {
@@ -93,9 +88,7 @@ ngOnInit() {
   loadDetail() {
     const url = Constants.SERVER_URL + `/api/edt/corrections/${this.correctionId}/`;
     this.http.get(url).subscribe((data: TranscriptionDetail) => {
-      console.log(data);
       this.paragraphs = data.content;
-      // renderParagraphs();
     }, (err) => {
       console.log(err);
       console.log('an error occurred');
@@ -114,47 +107,116 @@ ngOnInit() {
     this.mediaService.cleanup();
   }
 
-  // renderParagraphs() {
-  //   let innerHTML = ''
-  //   for (let paragraph of this.paragraphs) {
-  //     for (let i=0; i<paragraph.length; i++) {
-  //       word
-  //     }
-  //     let paragraph = this.paragraphs[i];
-  //     for
-  //   }
-  // }
-
-  updateTimestamps(ev) {
-    const target = ev.target;
-    let content = '';
-    for (const elem of target.children) {
-      content += elem.innerHTML;
-    }
-
-    const wordList = content.replace(/&nbsp;/gi, ' ').split(' ');
-    const index = target.dataset.index;
-    const paragraph = this.paragraphs[index];
-    const start = paragraph[0].start;
-    const end = paragraph[paragraph.length-1].end;
+  interpolate(wordList, start, end) {
     const duration = end - start;
     const numOfChars = wordList.join('').length;
     let currChar = 0;
     const newWords: WordInfo[] = [];
-    console.log(this.paragraphs[index]);
 
     for (const word of wordList) {
       const wordStart = start + currChar / numOfChars * duration;
       const wordEnd = start + (currChar+word.length) / numOfChars * duration;
       const wordInfo = {word,
-                       start: wordStart,
-                       end: wordEnd};
+                       start: this.round2(wordStart),
+                       end: this.round2(wordEnd)};
       newWords.push(wordInfo);
       currChar += word.length;
     }
+    return newWords;
+  }
 
-    this.paragraphs[index] = newWords;
-    console.log(this.paragraphs[index]);
+  paragraphTextToWordList(text) {
+    return text.replace(/ +(?= )/g,'').trim().split(' ');
+  }
+
+  updateTimestamps(ev, pIndex) {
+    console.log('focus out')
+    const target = ev.target;
+    let content = '';
+    for (const elem of target.children) {
+      content += elem.innerHTML;
+    }
+    const text = content.replace(/&nbsp;/gi, ' ');
+    if (this.deleteParagraphIfEmpty(text, pIndex)) {
+      return;
+    }
+    const wordList = this.paragraphTextToWordList(text);
+    const paragraph = this.paragraphs[pIndex];
+    const start = paragraph[0].start;
+    const end = paragraph[paragraph.length-1].end;
+
+    this.paragraphs[pIndex] = this.interpolate(wordList, start, end);
+  }
+
+  splitParagraphIfEnter(ev, pIndex) {
+    if (ev.key !== 'Enter') {
+      return;
+    }
+    ev.preventDefault();
+    // find where enter was pressed
+    const caretIndex = this.getCaretIndex(ev.target);
+    const paragraph = this.paragraphs[pIndex];
+    // get paragraph content as word list
+    let content = '';
+    for (const elem of ev.target.children) {
+      content += elem.innerHTML;
+    }
+    content = content.replace(/&nbsp;/gi, ' ');
+    if (this.deleteParagraphIfEmpty(content, pIndex)) {
+      return;
+    }
+    // split content
+    const content1 = content.slice(0, caretIndex);
+    const content2 = content.slice(caretIndex, content.length);
+    const startTime = paragraph[0].start;
+    const endTime = paragraph[paragraph.length - 1].end;
+    const splitTime = startTime + (content1.length / content.length) * (endTime - startTime);
+
+    // interpolate both new paragraphs
+    const wordList1 = this.paragraphTextToWordList(content1);
+    const wordList2 = this.paragraphTextToWordList(content2);
+    const wordObjList1 = this.interpolate(wordList1, startTime, splitTime);
+    const wordObjList2 = this.interpolate(wordList2, splitTime, endTime);
+
+    // replace paragraphs
+    this.paragraphs.splice(pIndex, 1, wordObjList1, wordObjList2)
+    return false;
+  }
+
+  mergeParagraphUp(pIndex) {
+    console.log('click')
+    // get both paragraphs
+    const p1 = this.paragraphs[pIndex-1];
+    const p2 = this.paragraphs[pIndex];
+    // merge
+    const newParagraph = p1.concat(p2);
+    // replace in this.paragraphs
+    this.paragraphs.splice(pIndex - 1, 2, newParagraph);
+  }
+
+  getCaretIndex(element) {
+    let position = 0;
+    const selection = window.getSelection();
+    if (selection.rangeCount !== 0) {
+      const range = window.getSelection().getRangeAt(0);
+      const preCaretRange = range.cloneRange();
+      preCaretRange.selectNodeContents(element);
+      preCaretRange.setEnd(range.endContainer, range.endOffset);
+      position = preCaretRange.toString().length;
+    }
+    return position;
+  }
+
+  round2(n) {
+    return Math.round(n*100) / 100;
+  }
+
+  deleteParagraphIfEmpty(content, pIndex) {
+    if (content.trim() === '') {
+      this.paragraphs.splice(pIndex, 1);
+      return true;
+    }
+    return false;
   }
 
 
