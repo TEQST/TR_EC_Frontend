@@ -20,7 +20,7 @@ export class MediaService {
 
   async loadAudio(transcriptionId: string) {
     this.audio = new Audio();
-    this.audio.addEventListener('canplaythrough', () => this.setupAudioButtons);
+    this.audio.addEventListener('canplaythrough', () => { this.setupAudioButtons(); });
     const blob = await this.manageFolderService.getTranscriptionAudio(transcriptionId);
     console.log(blob.type);
     this.audio.src = URL.createObjectURL(blob);

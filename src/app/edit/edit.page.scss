@@ -1,0 +1,25 @@
+
+#paragraphs {
+    ion-item {
+        overflow: visible!important;
+        .item-inner {
+          overflow: visible !important;
+          .input-wrapper {
+            overflow: visible !important;
+          }
+        }
+      }
+
+    ion-label {
+        flex: 0 0 80px;
+    }
+
+    .link-btn {
+        ion-icon {
+        }
+    }
+}
+
+.item {
+    contain: none;
+ }

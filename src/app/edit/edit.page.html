@@ -12,9 +12,18 @@
 
   </div>
   <div id="editor">
-    <ion-list>
-      <ion-item *ngFor="let paragraph of paragraphs">
-        <ion-text>{{paragraph[0].word}}</ion-text>
+    <ion-list id="paragraphs" spellcheck="false">
+      <ion-item *ngFor="let paragraph of paragraphs; index as i">
+        <ion-label>{{paragraph[0].start}}</ion-label>
+        <div contenteditable (focusout)="updateTimestamps($event)" [attr.data-index]="i">
+          <ng-container *ngFor="let word of paragraph; index as j">
+            <span>{{word.word}}</span>
+            <span *ngIf="j < paragraph.length - 1">&nbsp;</span>
+          </ng-container>
+        </div>
+        <ion-button slot="start" size="small" class="link-btn" *ngIf="i < paragraphs.length - 1">
+          <ion-icon name="arrow-up"></ion-icon>
+        </ion-button>
       </ion-item>
     </ion-list>
   </div>
@@ -22,7 +31,7 @@
 
 <ion-footer>
   <ion-buttons class="ion-justify-content-center">
-    <ion-button [disabled]="isLoaded" (click)="mediaStop()"><ion-icon name="square"></ion-icon></ion-button>
-    <ion-button [disabled]="isLoaded" (click)="mediaToggle()"><ion-icon [name]="isPlaying ? 'pause':'play'"></ion-icon></ion-button>
+    <ion-button [disabled]="!isLoaded" (click)="mediaStop()"><ion-icon name="square"></ion-icon></ion-button>
+    <ion-button [disabled]="!isLoaded" (click)="mediaToggle()"><ion-icon [name]="isPlaying ? 'pause':'play'"></ion-icon></ion-button>
   </ion-buttons>
 </ion-footer>
