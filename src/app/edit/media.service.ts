@@ -46,6 +46,22 @@ export class MediaService {
     this.isPlaying.next(false);
   }
 
+  setTime(time) {
+    this.audio.currentTime = time;
+    if (!this.isPlaying.getValue()) {
+      this.audio.play();
+      this.isPlaying.next(true);
+    }
+  }
+
+  getTime() {
+    return this.audio.currentTime;
+  }
+
+  getProgressAsPercent() {
+    return this.audio.currentTime / this.audio.duration * 100;
+  }
+
   cleanup() {
     URL.revokeObjectURL(this.audio.src);  // to avoid memory leak
   }

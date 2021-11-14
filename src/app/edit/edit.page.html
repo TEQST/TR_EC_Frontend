@@ -12,12 +12,13 @@
 
   </div>
   <div id="editor">
-    <ion-list id="paragraphs" spellcheck="false">
+    <ion-list #paragraphsList id="paragraphs" spellcheck="false">
       <ion-item *ngFor="let paragraph of paragraphs; index as i">
         <ion-label>{{paragraph[0].start}} - {{paragraph[paragraph.length-1].end}}</ion-label>
-        <div contenteditable (focusout)="updateTimestamps($event, i)" (keydown)="splitParagraphIfEnter($event, i)">
+        <ion-button shape="round" (click)="setAudioTime(paragraph[0].start)" id="play-paragraph-btn"><ion-icon name="play" id="play-paragraph-icon"></ion-icon></ion-button>
+        <div class="paragraph-wrapper" contenteditable (focusout)="updateTimestamps($event, i)" (keydown)="splitParagraphIfEnter($event, i)">
           <ng-container *ngFor="let word of paragraph; index as j">
-            <span>{{word.word}}</span>
+            <span class="word">{{word.word}}</span>
             <span *ngIf="j < paragraph.length - 1">&nbsp;</span>
           </ng-container>
         </div>
@@ -31,8 +32,16 @@
 </ion-content>
 
 <ion-footer>
-  <ion-buttons class="ion-justify-content-center">
-    <ion-button [disabled]="!isLoaded" (click)="mediaStop()"><ion-icon name="square"></ion-icon></ion-button>
-    <ion-button [disabled]="!isLoaded" (click)="mediaToggle()"><ion-icon [name]="isPlaying ? 'pause':'play'"></ion-icon></ion-button>
-  </ion-buttons>
+  <div id="audio-ctrl">
+    <ion-item>
+      <ion-range id="audio-progress" min="-200" max="200" color="secondary">
+        <ion-label slot="start">-200</ion-label>
+        <ion-label slot="end">200</ion-label>
+      </ion-range>
+    </ion-item>
+    <ion-buttons class="ion-justify-content-center">
+      <ion-button [disabled]="!isLoaded" (click)="mediaStop()" id="reset-btn"><ion-icon name="square"></ion-icon></ion-button>
+      <ion-button [disabled]="!isLoaded" (click)="mediaToggle()" id="start-stop-btn"><ion-icon [name]="isPlaying ? 'pause':'play'"></ion-icon></ion-button>
+    </ion-buttons>
+  </div>
 </ion-footer>

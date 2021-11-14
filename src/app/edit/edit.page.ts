@@ -24,14 +24,18 @@ interface TranscriptionDetail {
 })
 export class EditPage implements OnInit {
 
-  @ViewChild('paragraphs', {read: ElementRef}) paragraphsElem: ElementRef;
+  @ViewChild('paragraphsList', {read: ElementRef}) paragraphsElem: ElementRef;
 
   public isLoaded: boolean;
   public isPlaying: boolean;
   public paragraphs: WordInfo[][];
 
+  private wordIndex = 0;
+  private paragraphIndex = 0;
+
   private correctionId: string = null;
   private textId: string;
+  private highlightingInterval = null;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -59,12 +63,21 @@ ngOnInit() {
 
     }
     this.mediaService.isLoaded.subscribe(isLoaded => {
-      console.log(isLoaded);
       this.isLoaded = isLoaded;
     });
     this.mediaService.isPlaying.subscribe(isPlaying => {
-      console.log(isPlaying);
       this.isPlaying = isPlaying;
+
+      if (this.isPlaying) {
+        if (!this.highlightingInterval) {
+          this.highlightingInterval = setInterval(() => { this.updateWordHighlight(); }, 250);
+        }
+      }else {
+        if (this.highlightingInterval) {
+          clearInterval(this.highlightingInterval);
+        }
+      }
+
     });
     this.mediaService.loadAudio(this.textId);
   }
@@ -105,6 +118,10 @@ ngOnInit() {
     this.mediaService.toggle();
   }
 
+  setAudioTime(time) {
+    this.mediaService.setTime(time);
+  }
+
   ionViewWillLeave() {
     this.mediaService.cleanup();
   }
@@ -132,7 +149,6 @@ ngOnInit() {
   }
 
   updateTimestamps(ev, pIndex) {
-    console.log('focus out')
     const target = ev.target;
     let content = '';
     for (const elem of target.children) {
@@ -181,12 +197,11 @@ ngOnInit() {
     const wordObjList2 = this.interpolate(wordList2, splitTime, endTime);
 
     // replace paragraphs
-    this.paragraphs.splice(pIndex, 1, wordObjList1, wordObjList2)
+    this.paragraphs.splice(pIndex, 1, wordObjList1, wordObjList2);
     return false;
   }
 
   mergeParagraphUp(pIndex) {
-    console.log('click')
     // get both paragraphs
     const p1 = this.paragraphs[pIndex-1];
     const p2 = this.paragraphs[pIndex];
@@ -219,6 +234,62 @@ ngOnInit() {
       return true;
     }
     return false;
+  }
+
+
+  updateWordHighlight() {
+    const time = this.mediaService.getTime();
+
+    this.updateNextParagraphAndWordIndex(time);
+
+
+    const paragraphElem = this.paragraphsElem.nativeElement.childNodes[this.paragraphIndex];
+    const wordElems = paragraphElem.querySelectorAll('.paragraph-wrapper span.word');
+    const wordElem = wordElems[this.wordIndex];
+    if (wordElem.classList.contains('highlight')) {
+      wordElem.classList.remove('highlight');
+    }
+    wordElem.classList.add('highlight');
+
+      // let word = this.paragraphs[this.paragraphIndex][this.wordIndex];
+      // if (time >= word.start && time < word.end) return;
+
+    // highlight next
+
+    // let paragraph;
+    // let pIndex;
+    // for (pIndex=0; pIndex<this.paragraphs.length; pIndex++) {
+    //   paragraph = this.paragraphs[pIndex];
+    //   if (paragraph[paragraph.length - 1].end > time) {
+    //     break;
+    //   }
+    // }
+    // let word;
+    // let wordIndex;
+    // for (wordIndex=0; wordIndex<paragraph.length; pIndex++) {
+    //   word = paragraph[wordIndex];
+    //   if (word.end > time) {
+    //     break;
+    //   }
+    // }
+    // console.log(word);
+    // console.log(this.paragraphsElem.nativeElement.childNodes);
+  }
+
+  updateNextParagraphAndWordIndex(time) {
+    let wIndex = this.wordIndex;
+    for (let pIndex = this.paragraphIndex; pIndex < this.paragraphs.length; pIndex++) {
+      let paragraph = this.paragraphs[pIndex];
+      for (; wIndex < paragraph.length; wIndex++) {
+        let word = paragraph[wIndex];
+        if (time >= word.start && time < word.end) {
+          this.paragraphIndex = pIndex;
+          this.wordIndex = wIndex;
+          return;
+        }
+      }
+      wIndex = 0;
+    }
   }
 
 
