@@ -112,6 +112,14 @@ export class ManageFolderService {
   }
 
   downloadFolder(folder: Folder) {
-    // TODO
+    const url = this.SERVER_URL + `/api/pub/sharedfolders/${folder.id}/download/`;
+    this.http.get(url, {responseType: 'blob'}).subscribe((blob) => {
+      const a = document.createElement('a');
+      const objectUrl = URL.createObjectURL(blob);
+      a.href = objectUrl;
+      a.download = 'download.zip';
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+    });
   }
 }
