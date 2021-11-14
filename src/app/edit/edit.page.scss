@@ -36,6 +36,13 @@
     .link-btn, #merge-placeholder {
       width: 30px;
       margin-right: 5px;
+      position: absolute;
+      top: -20px;
+      left: 50px;
+    }
+
+    .link-btn {
+      height: 30px;
     }
 }
 
