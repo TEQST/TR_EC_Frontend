@@ -9,6 +9,7 @@ export class MediaService {
 
   public isPlaying = new BehaviorSubject<boolean>(false);
   public isLoaded  = new BehaviorSubject<boolean>(false);
+  public currentTime  = new BehaviorSubject<number>(0);
 
   private audio;
 
@@ -25,6 +26,9 @@ export class MediaService {
     console.log(blob.type);
     this.audio.src = URL.createObjectURL(blob);
     this.audio.load();
+    this.audio.addEventListener('timeupdate', () => {
+      this.currentTime.next(this.audio.currentTime);
+    });
   }
 
   setupAudioButtons() {
@@ -38,6 +42,20 @@ export class MediaService {
       this.audio.play();
     }
     this.isPlaying.next(!this.isPlaying.getValue());
+  }
+
+  pause() {
+    if (this.isPlaying.getValue()) {
+      this.audio.pause();
+      this.isPlaying.next(false);
+    }
+  }
+
+  play() {
+    if (!this.isPlaying.getValue()) {
+      this.audio.play()
+      this.isPlaying.next(true);
+    }
   }
 
   stop() {

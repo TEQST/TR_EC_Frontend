@@ -1,9 +1,9 @@
 @keyframes highlight {
   0%, 80% {
-    background-color: yellow
+    background-color: yellow;
   }
   100% {
-    color: inherit;
+    background-color: inherit;
   }
 }
 
@@ -20,6 +20,7 @@
         span.word {
           &.highlight {
             animation: 2s ease highlight;
+            // background-color: yellow;
           }
         }
       }
@@ -65,5 +66,7 @@ ion-footer {
     contain: none;
  }
 
-
+#save-btn {
+  padding-right: 10px;
+}
 

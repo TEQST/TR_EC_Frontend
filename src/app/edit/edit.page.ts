@@ -29,6 +29,11 @@ export class EditPage implements OnInit {
   public isLoaded: boolean;
   public isPlaying: boolean;
   public paragraphs: WordInfo[][];
+  public title = 'Editor';
+  public audioStartTime: number;
+  public audioEndTime: number;
+  public audioDuration: number;
+  public currentAudioTime: number;
 
   private wordIndex = 0;
   private paragraphIndex = 0;
@@ -55,6 +60,7 @@ ngOnInit() {
     }else {
       const url = Constants.SERVER_URL + `/api/edt/transcripts/${this.textId}/`;
       this.http.get(url).subscribe((data: any) => {
+        this.title = data.title;
         if (Number.isInteger(data.correction)) {
           this.correctionId = data.correction as string;
         }
@@ -75,10 +81,15 @@ ngOnInit() {
       }else {
         if (this.highlightingInterval) {
           clearInterval(this.highlightingInterval);
+          this.highlightingInterval = null;
         }
       }
-
     });
+
+    this.mediaService.currentTime.subscribe(currentTime => {
+      this.currentAudioTime = currentTime;
+    });
+
     this.mediaService.loadAudio(this.textId);
   }
 
@@ -104,9 +115,21 @@ ngOnInit() {
     const url = Constants.SERVER_URL + `/api/edt/corrections/${this.correctionId}/`;
     this.http.get(url).subscribe((data: TranscriptionDetail) => {
       this.paragraphs = data.content;
+      const lastParagraph = this.paragraphs[this.paragraphs.length - 1];
+      this.audioStartTime = this.paragraphs[0][0].start;
+      this.audioEndTime = lastParagraph[lastParagraph.length - 1].end;
+      this.audioDuration = this.audioEndTime - this.audioStartTime;
     }, (err) => {
       console.log(err);
       console.log('an error occurred');
+    });
+  }
+
+  saveTranscript() {
+    const url = Constants.SERVER_URL + `/api/edt/corrections/${this.correctionId}/`;
+
+    this.http.put(url, {trfile_json: this.paragraphs}).subscribe((data) => {}, (err) => {
+      alert('could not save!');
     });
   }
 
@@ -114,12 +137,24 @@ ngOnInit() {
     this.mediaService.stop();
   }
 
+  mediaPause() {
+    this.mediaService.pause();
+  }
+
   mediaToggle() {
     this.mediaService.toggle();
   }
 
-  setAudioTime(time) {
-    this.mediaService.setTime(time);
+  mediaPlay() {
+    this.mediaService.play();
+  }
+
+  setAudioTimeByParagraphIndex(pIndex) {
+    this.paragraphIndex = pIndex;
+    this.wordIndex = 0;
+
+    const paragraph = this.paragraphs[pIndex];
+    this.mediaService.setTime(paragraph[0].start);
   }
 
   ionViewWillLeave() {
@@ -202,6 +237,8 @@ ngOnInit() {
   }
 
   mergeParagraphUp(pIndex) {
+    this.mediaService.pause();
+    
     // get both paragraphs
     const p1 = this.paragraphs[pIndex-1];
     const p2 = this.paragraphs[pIndex];
@@ -209,6 +246,10 @@ ngOnInit() {
     const newParagraph = p1.concat(p2);
     // replace in this.paragraphs
     this.paragraphs.splice(pIndex - 1, 2, newParagraph);
+    this.paragraphIndex--;
+    this.wordIndex += p1.length;
+
+
   }
 
   getCaretIndex(element) {
@@ -238,58 +279,44 @@ ngOnInit() {
 
 
   updateWordHighlight() {
+    console.log('highlight')
     const time = this.mediaService.getTime();
 
-    this.updateNextParagraphAndWordIndex(time);
+    const updated = this.updateNextParagraphAndWordIndex(time);
+    if (!updated) {
+      return;
+    }
 
 
     const paragraphElem = this.paragraphsElem.nativeElement.childNodes[this.paragraphIndex];
     const wordElems = paragraphElem.querySelectorAll('.paragraph-wrapper span.word');
     const wordElem = wordElems[this.wordIndex];
-    if (wordElem.classList.contains('highlight')) {
-      wordElem.classList.remove('highlight');
+    // if (wordElem.classList.contains('highlight')) {
+    //   wordElem.classList.remove('highlight');
+    // }
+    if (!wordElem.classList.contains('highlight')) {
+      wordElem.classList.add('highlight');
+      wordElem.addEventListener('animationend', () => {
+        wordElem.classList.remove('highlight');
+      });
     }
-    wordElem.classList.add('highlight');
-
-      // let word = this.paragraphs[this.paragraphIndex][this.wordIndex];
-      // if (time >= word.start && time < word.end) return;
-
-    // highlight next
-
-    // let paragraph;
-    // let pIndex;
-    // for (pIndex=0; pIndex<this.paragraphs.length; pIndex++) {
-    //   paragraph = this.paragraphs[pIndex];
-    //   if (paragraph[paragraph.length - 1].end > time) {
-    //     break;
-    //   }
-    // }
-    // let word;
-    // let wordIndex;
-    // for (wordIndex=0; wordIndex<paragraph.length; pIndex++) {
-    //   word = paragraph[wordIndex];
-    //   if (word.end > time) {
-    //     break;
-    //   }
-    // }
-    // console.log(word);
-    // console.log(this.paragraphsElem.nativeElement.childNodes);
   }
 
   updateNextParagraphAndWordIndex(time) {
     let wIndex = this.wordIndex;
     for (let pIndex = this.paragraphIndex; pIndex < this.paragraphs.length; pIndex++) {
-      let paragraph = this.paragraphs[pIndex];
+      const paragraph = this.paragraphs[pIndex];
       for (; wIndex < paragraph.length; wIndex++) {
-        let word = paragraph[wIndex];
+        const word = paragraph[wIndex];
         if (time >= word.start && time < word.end) {
           this.paragraphIndex = pIndex;
           this.wordIndex = wIndex;
-          return;
+          return true;
         }
       }
       wIndex = 0;
     }
+    return false;
   }
 
 
