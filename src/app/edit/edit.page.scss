@@ -1,3 +1,11 @@
+@keyframes highlight {
+  0%, 80% {
+    background-color: yellow
+  }
+  100% {
+    color: inherit;
+  }
+}
 
 #paragraphs {
     ion-item {
@@ -8,10 +16,20 @@
             overflow: visible !important;
           }
         }
+
+        span.word {
+          &.highlight {
+            animation: 2s ease highlight;
+          }
+        }
       }
 
     ion-label {
-        flex: 0 0 140px;
+        flex: 0 0 100px;
+    }
+
+    #play-paragraph-btn {
+      margin-right: 10px;
     }
 
     .link-btn, #merge-placeholder {
@@ -20,6 +38,32 @@
     }
 }
 
+ion-footer {
+  height: 80px;
+}
+
+#audio-ctrl {
+  ion-item {
+    --min-height: 16px;
+
+    #audio-progress {
+      --height: 10px;
+      padding: 0;
+    }
+  }
+
+
+  ion-buttons ion-button {
+    font-size: 20px;
+    margin: 10px;
+  }
+
+
+}
+
 .item {
     contain: none;
  }
+
+
+
