@@ -19,7 +19,7 @@
       <ion-item *ngFor="let paragraph of paragraphs; index as i">
         <ion-label>{{paragraph[0].start}} - {{paragraph[paragraph.length-1].end}}</ion-label>
         <ion-button [disabled]="!isLoaded" shape="round" (click)="setAudioTimeByParagraphIndex(i)" id="play-paragraph-btn"><ion-icon name="play" id="play-paragraph-icon"></ion-icon></ion-button>
-        <div class="paragraph-wrapper" contenteditable (focusout)="updateTimestamps($event, i)" (keydown)="splitParagraphIfEnter($event, i)">
+        <div class="paragraph-wrapper" contenteditable (focusout)="updateTimestamps($event, i)" (keydown)="splitParagraphIfEnter($event, i)" (focus)="justSplitted = false;">
           <ng-container *ngFor="let word of paragraph; index as j">
             <span class="word">{{word.word}}</span>
             <span *ngIf="j < paragraph.length - 1">&nbsp;</span>

@@ -34,6 +34,7 @@ export class EditPage implements OnInit {
   public audioEndTime: number;
   public audioDuration: number;
   public currentAudioTime: number;
+  public justSplitted = false;
 
   private wordIndex = 0;
   private paragraphIndex = 0;
@@ -184,6 +185,13 @@ ngOnInit() {
   }
 
   updateTimestamps(ev, pIndex) {
+    // Chrome fires the focusout event when a paragraph is splitted,
+    // which causes a bug. this.justSplitted serves to prevent updateTimestamps
+    // from being called upon a paragraph split.
+    if (this.justSplitted) { return; }
+    // Alternative way to get target:
+    //const item = this.paragraphsElem.nativeElement.childNodes[pIndex];
+    //const target = item.querySelector('.paragraph-wrapper');
     const target = ev.target;
     let content = '';
     for (const elem of target.children) {
@@ -206,6 +214,7 @@ ngOnInit() {
       return;
     }
     ev.preventDefault();
+    this.justSplitted = true;
     // find where enter was pressed
     const caretIndex = this.getCaretIndex(ev.target);
     const paragraph = this.paragraphs[pIndex];
@@ -238,7 +247,6 @@ ngOnInit() {
 
   mergeParagraphUp(pIndex) {
     this.mediaService.pause();
-    
     // get both paragraphs
     const p1 = this.paragraphs[pIndex-1];
     const p2 = this.paragraphs[pIndex];
@@ -279,7 +287,6 @@ ngOnInit() {
 
 
   updateWordHighlight() {
-    console.log('highlight')
     const time = this.mediaService.getTime();
 
     const updated = this.updateNextParagraphAndWordIndex(time);
@@ -294,6 +301,8 @@ ngOnInit() {
     // if (wordElem.classList.contains('highlight')) {
     //   wordElem.classList.remove('highlight');
     // }
+
+    // what if word longer than animation?
     if (!wordElem.classList.contains('highlight')) {
       wordElem.classList.add('highlight');
       wordElem.addEventListener('animationend', () => {
