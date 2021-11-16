@@ -30,10 +30,8 @@ export class EditPage implements OnInit {
   public isPlaying: boolean;
   public paragraphs: WordInfo[][];
   public title = 'Editor';
-  public audioStartTime: number;
-  public audioEndTime: number;
   public audioDuration: number;
-  public currentAudioTime: number;
+  public currentAudioTime = 0;
 
   private wordIndex = 0;
   private paragraphIndex = 0;
@@ -70,6 +68,9 @@ ngOnInit() {
     }
     this.mediaService.isLoaded.subscribe(isLoaded => {
       this.isLoaded = isLoaded;
+      if (isLoaded) {
+        this.audioDuration = this.round2(this.mediaService.getDuration());
+      }
     });
     this.mediaService.isPlaying.subscribe(isPlaying => {
       this.isPlaying = isPlaying;
@@ -115,10 +116,6 @@ ngOnInit() {
     const url = Constants.SERVER_URL + `/api/edt/corrections/${this.correctionId}/`;
     this.http.get(url).subscribe((data: TranscriptionDetail) => {
       this.paragraphs = data.content;
-      const lastParagraph = this.paragraphs[this.paragraphs.length - 1];
-      this.audioStartTime = this.paragraphs[0][0].start;
-      this.audioEndTime = lastParagraph[lastParagraph.length - 1].end;
-      this.audioDuration = this.audioEndTime - this.audioStartTime;
     }, (err) => {
       console.log(err);
       console.log('an error occurred');
@@ -238,7 +235,6 @@ ngOnInit() {
 
   mergeParagraphUp(pIndex) {
     this.mediaService.pause();
-    
     // get both paragraphs
     const p1 = this.paragraphs[pIndex-1];
     const p2 = this.paragraphs[pIndex];
@@ -248,8 +244,6 @@ ngOnInit() {
     this.paragraphs.splice(pIndex - 1, 2, newParagraph);
     this.paragraphIndex--;
     this.wordIndex += p1.length;
-
-
   }
 
   getCaretIndex(element) {
@@ -277,16 +271,13 @@ ngOnInit() {
     return false;
   }
 
-
   updateWordHighlight() {
-    console.log('highlight')
     const time = this.mediaService.getTime();
 
     const updated = this.updateNextParagraphAndWordIndex(time);
     if (!updated) {
       return;
     }
-
 
     const paragraphElem = this.paragraphsElem.nativeElement.childNodes[this.paragraphIndex];
     const wordElems = paragraphElem.querySelectorAll('.paragraph-wrapper span.word');
@@ -302,21 +293,57 @@ ngOnInit() {
     }
   }
 
-  updateNextParagraphAndWordIndex(time) {
+  getNextParagraphAndWordIndex(time) {
+    let pIndex = this.paragraphIndex;
     let wIndex = this.wordIndex;
-    for (let pIndex = this.paragraphIndex; pIndex < this.paragraphs.length; pIndex++) {
+    for (; pIndex < this.paragraphs.length; pIndex++) {
       const paragraph = this.paragraphs[pIndex];
       for (; wIndex < paragraph.length; wIndex++) {
         const word = paragraph[wIndex];
         if (time >= word.start && time < word.end) {
-          this.paragraphIndex = pIndex;
-          this.wordIndex = wIndex;
-          return true;
+          return [pIndex, wIndex];
         }
       }
       wIndex = 0;
     }
+    return [this.paragraphIndex, this.wordIndex];
+  }
+
+
+  updateNextParagraphAndWordIndex(time) {
+    const [pIndex, wIndex] = this.getNextParagraphAndWordIndex(time);
+    if (pIndex !== this.paragraphIndex || wIndex !== this.wordIndex) {
+      this.paragraphIndex = pIndex;
+      this.wordIndex = wIndex;
+      return true;
+    }
     return false;
+  }
+
+  // updateNextParagraphAndWordIndex(time) {
+  //   let wIndex = this.wordIndex;
+  //   for (let pIndex = this.paragraphIndex; pIndex < this.paragraphs.length; pIndex++) {
+  //     const paragraph = this.paragraphs[pIndex];
+  //     for (; wIndex < paragraph.length; wIndex++) {
+  //       const word = paragraph[wIndex];
+  //       if (time >= word.start && time < word.end) {
+  //         this.paragraphIndex = pIndex;
+  //         this.wordIndex = wIndex;
+  //         return true;
+  //       }
+  //     }
+  //     wIndex = 0;
+  //   }
+  //   return false;
+  // }
+
+  changeAudioTimeBySlider(ev) {
+    if (!ev.target.classList.contains('range-pressed')) {
+      return;
+    }
+    const time = parseInt(ev.detail.value, 10) / 100;
+    this.mediaService.setTime(time);
+    this.updateNextParagraphAndWordIndex(time);
   }
 
 

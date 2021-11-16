@@ -37,9 +37,9 @@
 <ion-footer>
   <div id="audio-ctrl">
     <ion-item>
-      <ion-range id="audio-progress" min="0" max="{{audioDuration*100}}" color="secondary" value="{{(currentAudioTime - audioStartTime)*100}}">
-        <ion-label slot="start">{{audioStartTime}}</ion-label>
-        <ion-label slot="end">{{audioEndTime}}</ion-label>
+      <ion-range id="audio-progress" (ionChange)="changeAudioTimeBySlider($event)" min="0" max="{{audioDuration*100}}" color="secondary" value="{{currentAudioTime*100}}">
+        <ion-label slot="start">{{0}}</ion-label>
+        <ion-label slot="end">{{audioDuration}}</ion-label>
       </ion-range>
     </ion-item>
     <ion-buttons class="ion-justify-content-center">
