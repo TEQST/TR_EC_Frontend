@@ -1,6 +1,8 @@
+import { renderFlagCheckIfStmt } from '@angular/compiler/src/render3/view/template';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { ManageFolderService } from 'src/app/services/manage-folder.service';
 
 @Component({
   selector: 'app-create-transcription',
@@ -9,13 +11,18 @@ import { ModalController } from '@ionic/angular';
 })
 export class CreateTranscriptionPage implements OnInit {
 
-  public formValid: boolean;
+  public formValidSingle: boolean;
+  public formValidMulti: boolean;
   public titleValid: boolean;
+  public formatValidSingle: boolean;
+  public formatValidMulti: boolean;
   public srcFileSelected: boolean;
   public trFileSelected: boolean;
   public zipFileSelected: boolean;
-  public createTranscriptionForm: FormGroup;
+  public createTranscriptionFormSingle: FormGroup;
+  public createTranscriptionFormMulti: FormGroup;
   public singleUpload = true;
+  public formats = new Array();
 
   /* allow any characters except \,/,:,*,<,>,| and whitespaces
      but not filenames starting with the character . */
@@ -28,16 +35,30 @@ export class CreateTranscriptionPage implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private viewCtrl: ModalController,
+    private manageFolderService: ManageFolderService
   ) {
-    this.createTranscriptionForm = this.formBuilder.group({
-      title: ['', (control) => this.transcriptionTitleValidator(control)]
+    this.createTranscriptionFormSingle = this.formBuilder.group({
+      title: ['', (control) => this.transcriptionTitleValidator(control)],
+      format: ['', (control) => this.transcriptionFormatValidatorSingle(control)]
     });
-    this.createTranscriptionForm.valueChanges.subscribe(() => {
-      this.updateFormValidity();
+    this.createTranscriptionFormSingle.valueChanges.subscribe(() => {
+      this.updateFormValiditySingle();
+    });
+    this.createTranscriptionFormMulti = this.formBuilder.group({
+      format: ['', (control) => this.transcriptionFormatValidatorMulti(control)]
+    });
+    this.createTranscriptionFormMulti.valueChanges.subscribe(() => {
+      this.updateFormValidityMulti();
     });
   }
 
   ngOnInit() {
+    this.manageFolderService.getFormats().subscribe((res: {'formats': string[]}) => {
+      console.log(res);
+      this.formats = res.formats;
+    }, (err) => {
+      console.log('couldnt get formats');
+    });
   }
 
   dismiss() {
@@ -63,14 +84,16 @@ export class CreateTranscriptionPage implements OnInit {
       single: true,
       title: formData.title,
       srcfile: this.srcFile,
-      trfile: this.trFile};
+      trfile: this.trFile,
+      format: formData.format};
     this.viewCtrl.dismiss(returnData);
   }
 
-  createTranscriptionMulti() {
+  createTranscriptionMulti(formData) {
     const returnData = {
       single: false,
-      zfile: this.zipFile
+      zfile: this.zipFile,
+      format: formData.format
     };
     this.viewCtrl.dismiss(returnData);
   }
@@ -78,18 +101,19 @@ export class CreateTranscriptionPage implements OnInit {
   setSrcFile(file) {
     this.srcFile = file;
     this.srcFileSelected = true;
-    this.updateFormValidity();
+    this.updateFormValiditySingle();
   }
 
   setTrFile(file) {
     this.trFile = file;
     this.trFileSelected = true;
-    this.updateFormValidity();
+    this.updateFormValiditySingle();
   }
 
   setZipFile(file) {
     this.zipFile = file;
     this.zipFileSelected = true;
+    this.updateFormValidityMulti();
   }
 
   transcriptionTitleValidator(control: FormControl) {
@@ -104,10 +128,34 @@ export class CreateTranscriptionPage implements OnInit {
     return null;
   }
 
-  updateFormValidity() {
-    this.formValid = this.titleValid &&
-                     this.srcFileSelected &&
-                     this.trFileSelected;
+  transcriptionFormatValidatorSingle(control: FormControl) {
+    const format = control.value;
+    this.formatValidSingle = this.formats.includes(format);
+    if (!this.formatValidSingle) {
+      return {textFormat: true};
+    }
+    return null;
+  }
+
+  transcriptionFormatValidatorMulti(control: FormControl) {
+    const format = control.value;
+    this.formatValidMulti = this.formats.includes(format);
+    if (!this.formatValidMulti) {
+      return {textFormat: true};
+    }
+    return null;
+  }
+
+  updateFormValiditySingle() {
+    this.formValidSingle = this.titleValid &&
+                           this.srcFileSelected &&
+                           this.trFileSelected &&
+                           this.formatValidSingle;
+  }
+
+  updateFormValidityMulti() {
+    this.formValidMulti = this.zipFileSelected &&
+                          this.formatValidMulti;
   }
 
 }
