@@ -122,4 +122,9 @@ export class ManageFolderService {
       URL.revokeObjectURL(objectUrl);
     });
   }
+
+  getFormats() {
+    const url = this.SERVER_URL + `/api/pub/transcripts/formats/`;
+    return this.http.get(url);
+  }
 }
