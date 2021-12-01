@@ -98,19 +98,22 @@ export class CreateTranscriptionPage implements OnInit {
     this.viewCtrl.dismiss(returnData);
   }
 
-  setSrcFile(file) {
+  setSrcFile(target) {
+    const file = (target as HTMLInputElement).files.item(0);
     this.srcFile = file;
     this.srcFileSelected = true;
     this.updateFormValiditySingle();
   }
 
-  setTrFile(file) {
+  setTrFile(target) {
+    const file = (target as HTMLInputElement).files.item(0);
     this.trFile = file;
     this.trFileSelected = true;
     this.updateFormValiditySingle();
   }
 
-  setZipFile(file) {
+  setZipFile(target) {
+    const file = (target as HTMLInputElement).files.item(0);
     this.zipFile = file;
     this.zipFileSelected = true;
     this.updateFormValidityMulti();

@@ -59,7 +59,8 @@ export class ShareFolderPage implements OnInit {
   }
 
   // update the search term on text input
-  onSearchTerm(event: CustomEvent) {
+  // for some reason adding ",detail?" solves a compiler error.
+  onSearchTerm(event,detail?: CustomEvent) {
     this.searchTerm = event.detail.value;
     this.filterLists();
   }
