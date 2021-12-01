@@ -1,9 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Constants } from '../constants';
 import { User } from '../interfaces/user';
 import { Folder } from '../manage/manage.folder';
+import {saveAs} from 'file-saver';
+import { AlertManagerService } from './alert-manager.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +13,8 @@ import { Folder } from '../manage/manage.folder';
 export class ManageFolderService {
   SERVER_URL = Constants.SERVER_URL;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+              private alertManager: AlertManagerService) {}
 
   // getFolderInfoFor
 
@@ -113,14 +116,23 @@ export class ManageFolderService {
 
   downloadFolder(folder: Folder) {
     const url = this.SERVER_URL + `/api/pub/sharedfolders/${folder.id}/download/`;
-    this.http.get(url, {responseType: 'blob'}).subscribe((blob) => {
-      const a = document.createElement('a');
-      const objectUrl = URL.createObjectURL(blob);
-      a.href = objectUrl;
-      a.download = 'download.zip';
-      a.click();
-      URL.revokeObjectURL(objectUrl);
-    });
+
+    const fileName = `${folder.name}_${folder.id}.zip`;
+
+    this.http.get(url, {responseType: 'blob'}).subscribe((zipData) => {
+      const blob = new Blob([zipData], {
+        type: 'application/zip',
+      });
+      // save file locally
+      saveAs(blob, fileName);
+    },
+    (error: HttpErrorResponse) => {
+      this.alertManager.showErrorAlertNoRedirection(
+          'No download available',
+          'No Speaker has finished a text of the current folder yet. ' +
+              'Please try again later.');
+    },
+    );
   }
 
   getFormats() {
