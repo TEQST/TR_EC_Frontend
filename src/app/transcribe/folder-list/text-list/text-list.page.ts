@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { element } from 'protractor';
+import { stringify } from 'querystring';
 import { BaseComponent } from 'src/app/base-component';
 import { SharedFolder } from 'src/app/interfaces/shared-folder';
 import { LoaderService } from 'src/app/services/loader.service';
@@ -37,7 +40,6 @@ export class TextListPage extends BaseComponent implements OnInit {
       this.sharedFolderData = data;
       this.folderName = data.name;
       this.texts = data.transcripts;
-      console.log(this.texts)
       this.textListElem.nativeElement.classList.add('loaded');
     });
     // clear contents when data is being refreshed
