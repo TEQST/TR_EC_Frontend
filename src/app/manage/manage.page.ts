@@ -1,8 +1,10 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ModalController } from '@ionic/angular';
 import { AlertManagerService } from '../services/alert-manager.service';
 import { LoaderService } from '../services/loader.service';
 import { ManageFolderService } from '../services/manage-folder.service';
+import { FolderStatsPage } from './folder-stats/folder-stats.page';
 import { ManageFolderUiService } from './manage-folder-ui.service';
 import { ManageTranscriptionUiService } from './manage-transcription-ui.service';
 import { Folder } from './manage.folder';
@@ -32,6 +34,7 @@ export class ManagePage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private alertManager: AlertManagerService,
+    private modalController: ModalController,
     private loaderService: LoaderService
   ) {
 
@@ -114,7 +117,17 @@ export class ManagePage implements OnInit {
     this.manageFolderUIService.openShareFolderModal(this.currentFolder);
   }
 
-  // leave out stats
+  async openFolderStatsModal() {
+    const modal = await this.modalController.create({
+      component: FolderStatsPage,
+      componentProps: {
+        // pass variables to the modal
+        folderId: this.currentFolder.id,
+        folderName: this.currentFolder.name,
+      },
+    });
+    return await modal.present();
+  }
 
   downloadFolder() {
     this.manageFolderService.downloadFolder(this.currentFolder);
