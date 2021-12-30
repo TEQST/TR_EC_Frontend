@@ -29,30 +29,36 @@ export class AuthenticationService {
 
   // login into Website, saving userdata in localStorage, redirect to speak tab
   // and fetching userdata from server
-  login(dataToSend): void {
-    const url = this.SERVER_URL + '/api/auth/login/';
-    this.http.post(url, dataToSend, this.httpOptions)
-        .subscribe((loginResponse: object) => {
-          const userData = loginResponse['user'] as User;
-          this.usermgmtService.isPublisher.next(userData.is_publisher);
-          this.dataFromServer = JSON.stringify(loginResponse);
-          localStorage.setItem(
-              'Token',
-              'Token ' + JSON.parse(this.dataFromServer).token);
-          this.usermgmtService.storeUserData(userData);
+  // login(dataToSend): void {
+  //   const url = this.SERVER_URL + '/api/auth/login/';
+  //   this.http.post(url, dataToSend, this.httpOptions)
+  //       .subscribe((loginResponse: object) => {
+  //         const userData = loginResponse['user'] as User;
+  //         this.usermgmtService.isPublisher.next(userData.is_publisher);
+  //         this.dataFromServer = JSON.stringify(loginResponse);
+  //         localStorage.setItem(
+  //             'Token',
+  //             'Token ' + JSON.parse(this.dataFromServer).token);
+  //         this.usermgmtService.storeUserData(userData);
 
-          if (this.route.snapshot.queryParamMap.has('next')) {
-            const nextURL = this.route.snapshot.queryParamMap.get('next');
-            this.navCtrl.navigateForward(nextURL);
-          } else {
-            this.navCtrl.navigateForward('/tabs/transcribe');
-          }
-        }, (error: any) => {
-          // calls AlertService when server sends error code
-          this.alertService.showErrorAlertNoRedirection(
-              'Wrong Input',
-              'Invalid Password or Username');
-        });
+  //         if (this.route.snapshot.queryParamMap.has('next')) {
+  //           const nextURL = this.route.snapshot.queryParamMap.get('next');
+  //           this.navCtrl.navigateForward(nextURL);
+  //         } else {
+  //           this.navCtrl.navigateForward('/tabs/transcribe');
+  //         }
+  //       }, (error: any) => {
+  //         // calls AlertService when server sends error code
+  //         this.alertService.showErrorAlertNoRedirection(
+  //             'Wrong Input',
+  //             'Invalid Password or Username');
+  //       });
+  // }
+
+  login(): void {
+    const url = this.SERVER_URL + '/api/login/';
+    this.http.post(url, this.httpOptions)
+      .subscribe((loginResponse: object) => {});
   }
 
   register(registrationData: RegisterForm): Observable<object> {
