@@ -23,6 +23,7 @@ export class CreateTranscriptionPage implements OnInit {
   public createTranscriptionFormMulti: FormGroup;
   public singleUpload = true;
   public formats = new Array();
+  public acceptedTypes = '';
 
   /* allow any characters except \,/,:,*,<,>,| and whitespaces
      but not filenames starting with the character . */
@@ -56,6 +57,8 @@ export class CreateTranscriptionPage implements OnInit {
     this.manageFolderService.getFormats().subscribe((res: {'formats': string[]}) => {
       console.log(res);
       this.formats = res.formats;
+      //TODO: dynamically update once api includes file types
+      this.acceptedTypes = '.json, .vtt';
     }, (err) => {
       console.log('couldnt get formats');
     });

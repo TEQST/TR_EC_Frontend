@@ -36,7 +36,7 @@
       </ion-item>
       <ion-item #selectFileWrapper [ngClass]="trFileSelected ? 'ion-valid' : 'ion-invalid'">
         <ion-label position="stacked">Transcription Text File</ion-label>
-        <ion-input (change)="setTrFile($event.target.files.item(0))" ng-required="required" type="file" accept=".json, .vtt">
+        <ion-input (change)="setTrFile($event.target.files.item(0))" ng-required="required" type="file" [accept]="acceptedTypes">
         </ion-input>
       </ion-item>
       <ion-item>
