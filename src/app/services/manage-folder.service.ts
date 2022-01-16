@@ -46,7 +46,7 @@ export class ManageFolderService {
     return this.http.delete(url);
   }
 
-  createTranscriptionSingle(params: any[]) {
+  createTranscriptionSingle(params: any) {
     const formData = new FormData();
     for (const param in params) {
       if ({}.hasOwnProperty.call(params, param)) {
@@ -60,10 +60,13 @@ export class ManageFolderService {
     }
     const url = this.SERVER_URL + `/api/pub/transcripts/`;
 
-    return this.http.post(url, formData);
+    return this.http.post(url, formData, {
+      reportProgress: true,
+      observe: 'events',
+    });
   }
 
-  createTranscriptionMulti(params: any[]) {
+  createTranscriptionMulti(params: any) {
     const formData = new FormData();
     for (const param in params) {
       if ({}.hasOwnProperty.call(params, param)) {
@@ -77,7 +80,10 @@ export class ManageFolderService {
     }
     const url = this.SERVER_URL + `/api/pub/transcripts/multiupload/`;
 
-    return this.http.post(url, formData);
+    return this.http.post(url, formData, {
+      reportProgress: true,
+      observe: 'events',
+    });
   }
 
   deleteTranscription(transcriptionId: string) {

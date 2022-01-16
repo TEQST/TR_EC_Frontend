@@ -45,31 +45,13 @@ export class ManageTranscriptionUiService {
     const modal = await this.modelController.create({
       component: CreateTranscriptionPage,
       componentProps: {
+        currentFolder: currentFolder.id,
         existingTranscriptionNames: transcriptions.map((transcription) => transcription.title)
       }
     });
-    modal.onDidDismiss().then(async (returnData) => {
-      const params = returnData.data;
-      if (params) {
-        params['shared_folder'] = currentFolder.id;
-        if (params['single']) {
-          delete params['single']
-          this.manageFolderService.createTranscriptionSingle(params).subscribe(
-            successCallback,
-            (err) => this.alertManager.showErrorAlertNoRedirection(
-              err.status, err.statusText
-            )
-          );
-        } else {
-          delete params['single']
-          this.manageFolderService.createTranscriptionMulti(params).subscribe(
-            successCallback,
-            (err) => this.alertManager.showErrorAlertNoRedirection(
-              err.status, err.statusText
-            )
-          );
-        }
-      }
+    modal.onDidDismiss().then( () => {
+      successCallback();
+
     });
     await modal.present();
   }

@@ -1,8 +1,13 @@
+import { HttpErrorResponse, HttpEvent } from '@angular/common/http';
+import { catchError, share } from 'rxjs/operators';
 import { renderFlagCheckIfStmt } from '@angular/compiler/src/render3/view/template';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
+import { upload, Upload } from 'ngx-operators';
+import { Observable } from 'rxjs';
 import { ManageFolderService } from 'src/app/services/manage-folder.service';
+import { AlertManagerService } from 'src/app/services/alert-manager.service';
 
 @Component({
   selector: 'app-create-transcription',
@@ -23,6 +28,9 @@ export class CreateTranscriptionPage implements OnInit {
   public createTranscriptionFormMulti: FormGroup;
   public singleUpload = true;
   public formats = new Array();
+  public upload$: Observable<Upload>;
+
+
 
   /* allow any characters except \,/,:,*,<,>,| and whitespaces
      but not filenames starting with the character . */
@@ -31,11 +39,13 @@ export class CreateTranscriptionPage implements OnInit {
   private trFile: File;
   private zipFile: File;
   private existingTranscriptionNames: string[];
+  private currentFolder: number;
 
   constructor(
     private formBuilder: FormBuilder,
     private viewCtrl: ModalController,
-    private manageFolderService: ManageFolderService
+    private manageFolderService: ManageFolderService,
+    private alertManager: AlertManagerService
   ) {
     this.createTranscriptionFormSingle = this.formBuilder.group({
       title: ['', (control) => this.transcriptionTitleValidator(control)],
@@ -54,7 +64,6 @@ export class CreateTranscriptionPage implements OnInit {
 
   ngOnInit() {
     this.manageFolderService.getFormats().subscribe((res: {'formats': string[]}) => {
-      console.log(res);
       this.formats = res.formats;
     }, (err) => {
       console.log('couldnt get formats');
@@ -78,24 +87,45 @@ export class CreateTranscriptionPage implements OnInit {
     }
   }
 
+
+
   createTranscriptionSingle(formData) {
-    // close the modal and pass its data back to the view
+
     const returnData = {
-      single: true,
+      shared_folder: this.currentFolder,
       title: formData.title,
       srcfile: this.srcFile,
       trfile: this.trFile,
       format: formData.format};
-    this.viewCtrl.dismiss(returnData);
+
+    //start the upload an get progress data
+    this.upload$ = this.manageFolderService.createTranscriptionSingle(returnData)
+    .pipe(
+      upload(),
+      share());
+    this.upload$.subscribe((status) => {
+      if(status.state === 'DONE') {
+        this.viewCtrl.dismiss();
+      }}, (err) => this.handleError(err));
   }
 
   createTranscriptionMulti(formData) {
+
     const returnData = {
-      single: false,
+      shared_folder: this.currentFolder,
       zfile: this.zipFile,
       format: formData.format
     };
-    this.viewCtrl.dismiss(returnData);
+
+    //start the upload an get progress data
+    this.upload$ = this.manageFolderService.createTranscriptionMulti(returnData)
+    .pipe(
+      upload(),
+      share());
+    this.upload$.subscribe((status) => {
+      if(status.state === 'DONE') {
+        this.viewCtrl.dismiss();
+      }}, (err) => this.handleError(err));
   }
 
   setSrcFile(target) {
@@ -161,4 +191,9 @@ export class CreateTranscriptionPage implements OnInit {
                           this.formatValidMulti;
   }
 
+  private handleError(err) {
+    this.alertManager.showErrorAlertNoRedirection(
+      err.status, err.statusText
+    );
+  }
 }

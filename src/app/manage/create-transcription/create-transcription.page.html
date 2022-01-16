@@ -13,67 +13,80 @@
 
 
 <ion-content class="no-select">
-  <ion-grid class="ion-no-padding">
-    <ion-row>
-      <ion-col>
-        <ion-button class="no-margin" expand="full" [fill]="singleUpload ? 'solid' : 'outline'" (click)="switchToSingle()">Single</ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button class="no-margin" expand="full" [fill]="singleUpload ? 'outline' : 'solid'" (click)="switchToMulti()">Multiple</ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-  <form *ngIf="singleUpload" [formGroup]="createTranscriptionFormSingle" (ngSubmit)="createTranscriptionSingle(createTranscriptionFormSingle.value)">
-    <ion-list lines="full" class="ion-no-margin ion-no-padding">
-      <ion-item>
-        <ion-label position="stacked">Title</ion-label>
-        <ion-input #titleInput formControlName="title" name="name"></ion-input>
-      </ion-item>
-      <ion-item #selectFileWrapper [ngClass]="srcFileSelected ? 'ion-valid' : 'ion-invalid'">
-        <ion-label position="stacked">Transcription Audio Source</ion-label>
-        <ion-input (change)="setSrcFile($event.target)" ng-required="required" type="file" accept=".mp3,.mp4,.wav">
-        </ion-input>
-      </ion-item>
-      <ion-item #selectFileWrapper [ngClass]="trFileSelected ? 'ion-valid' : 'ion-invalid'">
-        <ion-label position="stacked">Transcription Text File</ion-label>
-        <ion-input (change)="setTrFile($event.target)" ng-required="required" type="file" accept=".json, .vtt">
-        </ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="stacked">Format</ion-label>
-        <ion-select formControlName="format">
-          <ion-select-option *ngFor="let format of formats" [value]="format">
-            {{format}}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-    </ion-list>
-    <div class="ion-padding">
-      <ion-button [disabled]="!formValidSingle" expand="block" type="submit" class="ion-no-margin" color="dark">
-        Create transcription
-      </ion-button>
-    </div>
-  </form>
-  <form *ngIf="!singleUpload" [formGroup]="createTranscriptionFormMulti" (ngSubmit)="createTranscriptionMulti(createTranscriptionFormMulti.value)">
-    <ion-list lines="full" class="ion-no-margin ion-no-padding">
-      <ion-item #selectFileWrapper [ngClass]="zipFileSelected ? 'ion-valid' : 'ion-invalid'">
-        <ion-label position="stacked">Zip File</ion-label>
-        <ion-input (change)="setZipFile($event.target)" ng-required="required" type="file" accept=".zip">
-        </ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="stacked">Format</ion-label>
-        <ion-select formControlName="format">
-          <ion-select-option *ngFor="let format of formats" [value]="format">
-            {{format}}
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
-    </ion-list>
-    <div class="ion-padding">
-      <ion-button [disabled]="!formValidMulti" expand="block" type="submit" class="ion-no-margin" color="dark">
-        Create Transcriptions
-      </ion-button>
-    </div>
-  </form>
+  <div >
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col>
+          <ion-button class="no-margin" expand="full" [disabled]="upload$" [fill]="singleUpload ? 'solid' : 'outline'" (click)="switchToSingle()">Single</ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button class="no-margin" expand="full" [disabled]="upload$" [fill]="singleUpload ? 'outline' : 'solid'" (click)="switchToMulti()">Multiple</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+    <form *ngIf="singleUpload" [disabled]="upload$" [formGroup]="createTranscriptionFormSingle" (ngSubmit)="createTranscriptionSingle(createTranscriptionFormSingle.value)">
+      <ion-list lines="full" class="ion-no-margin ion-no-padding">
+        <ion-item>
+          <ion-label position="stacked">Title</ion-label>
+          <ion-input #titleInput formControlName="title" name="name"></ion-input>
+        </ion-item>
+        <ion-item #selectFileWrapper [ngClass]="srcFileSelected ? 'ion-valid' : 'ion-invalid'">
+          <ion-label position="stacked">Transcription Audio Source</ion-label>
+          <ion-input (change)="setSrcFile($event.target)" ng-required="required" type="file" accept=".mp3,.mp4,.wav">
+          </ion-input>
+        </ion-item>
+        <ion-item #selectFileWrapper [ngClass]="trFileSelected ? 'ion-valid' : 'ion-invalid'">
+          <ion-label position="stacked">Transcription Text File</ion-label>
+          <ion-input (change)="setTrFile($event.target)" ng-required="required" type="file" accept=".json, .vtt">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Format</ion-label>
+          <ion-select formControlName="format">
+            <ion-select-option *ngFor="let format of formats" [value]="format">
+              {{format}}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+      <div class="ion-padding">
+        <ion-button [disabled]="!formValidSingle  || upload$" expand="block" type="submit" class="ion-no-margin" color="dark">
+          Create transcription
+        </ion-button>
+      </div>
+    </form>
+    <form *ngIf="!singleUpload" [formGroup]="createTranscriptionFormMulti" (ngSubmit)="createTranscriptionMulti(createTranscriptionFormMulti.value)">
+      <ion-list lines="full" class="ion-no-margin ion-no-padding">
+        <ion-item #selectFileWrapper [ngClass]="zipFileSelected ? 'ion-valid' : 'ion-invalid'">
+          <ion-label position="stacked">Zip File</ion-label>
+          <ion-input (change)="setZipFile($event.target)" ng-required="required" type="file" accept=".zip">
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Format</ion-label>
+          <ion-select formControlName="format">
+            <ion-select-option *ngFor="let format of formats" [value]="format">
+              {{format}}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+      <div class="ion-padding">
+        <ion-button [disabled]="!formValidMulti || upload$" expand="block" type="submit" class="ion-no-margin" color="dark">
+          Create Transcriptions
+        </ion-button>
+      </div>
+    </form>
+  </div>
+
+  <ion-progress-bar
+    *ngIf="upload$ | async as upload"
+    [type]="upload.state == 'PENDING' ? 'indeterminate' : 'determinate'"
+    [value]="upload.progress/100">
+  </ion-progress-bar>
+  <div *ngIf="upload$"  style="height: 3em; display:flex;justify-content:center;align-items:center;">
+    <span style="margin-right: 0.5em;">Uploading...</span>
+    <ion-spinner></ion-spinner>
+  </div>
+
 </ion-content>
