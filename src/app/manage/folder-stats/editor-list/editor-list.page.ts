@@ -27,8 +27,6 @@ export class EditorListPage implements OnInit {
 
     this.statsServices.getSharedFolderStats(this.folderId)
     .subscribe((folderStats) => {
-      console.log(folderStats);
-      // this.addCompletedCountToSpeakers(folderStats);
       this.folderStats = folderStats;
       this.contentElem.nativeElement.classList.add('loaded');
     });
