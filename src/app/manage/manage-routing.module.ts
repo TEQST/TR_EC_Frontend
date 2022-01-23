@@ -15,6 +15,10 @@ const routes: Routes = [
   {
     path: 'transcription/:transcriptionId',
     loadChildren: () => import('./transcription-detail/transcription-detail.module').then( m => m.TranscriptionDetailPageModule)
+  },
+  {
+    path: 'folder-stats',
+    loadChildren: () => import('./folder-stats/folder-stats.module').then( m => m.FolderStatsPageModule)
   }
 
 ];
